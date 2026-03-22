@@ -3,6 +3,7 @@ import { ThemeOrchestrator } from '../../../ai/orchestrator';
 import { createProvider } from '../../../ai/provider';
 import { packageThemeAsBuffer } from '../../../assembler';
 import { sanitizeThemeName } from '../../../lib/sanitize';
+import { validateInput, checkRateLimit } from '../../../lib/guardrails';
 import { ThemePrompt, GenerationProgress } from '../../../types';
 
 const MAX_DESCRIPTION_LENGTH = 2000;
@@ -14,32 +15,47 @@ function sanitizeInput(val: unknown, maxLength: number): string {
   return val.trim().slice(0, maxLength);
 }
 
+function jsonError(message: string, status: number) {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'anonymous';
+  const rateCheck = checkRateLimit(clientIp);
+  if (!rateCheck.safe) {
+    return jsonError(rateCheck.reason!, 429);
+  }
+
   let body: Record<string, unknown>;
   try {
     body = await request.json();
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonError('Invalid JSON body', 400);
   }
 
   const description = sanitizeInput(body.description, MAX_DESCRIPTION_LENGTH);
   const name = sanitizeInput(body.name, MAX_NAME_LENGTH) || 'My Theme';
 
   if (!description) {
-    return new Response(JSON.stringify({ error: 'Description is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonError('Description is required', 400);
   }
 
   if (description.length < 10) {
-    return new Response(JSON.stringify({ error: 'Description must be at least 10 characters' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonError('Description must be at least 10 characters', 400);
+  }
+
+  // Guardrails: check all user inputs for prompt injection and content safety
+  const allInput = [description, name, body.colorPreferences, body.typographyPreferences, body.layoutPreferences]
+    .filter(Boolean)
+    .join(' ');
+
+  const guardrailCheck = validateInput(allInput);
+  if (!guardrailCheck.safe) {
+    return jsonError(guardrailCheck.reason!, 400);
   }
 
   const prompt: ThemePrompt = {
