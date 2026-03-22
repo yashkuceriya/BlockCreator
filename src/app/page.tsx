@@ -5,6 +5,7 @@ import { ThemeForm } from '../components/ThemeForm';
 import { GenerationTerminal } from '../components/GenerationTerminal';
 import { PlaygroundPreview } from '../components/PlaygroundPreview';
 import { SuccessCard } from '../components/SuccessCard';
+import { ThemeSummary } from '../components/ThemeSummary';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { useThemeGeneration } from '../hooks/useThemeGeneration';
 import { Button } from '../components/ui/button';
@@ -104,7 +105,8 @@ export default function Home() {
               <div className="p-6 space-y-5">
                 <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} />
                 {error && <ErrorDisplay message={error} onRetry={reset} />}
-                {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }} />}
+                {result && <ThemeSummary files={result.files} />}
+            {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }} />}
               </div>
               <div ref={terminalRef}>
                 <GenerationTerminal logs={progress} startedAt={startedAt} />
@@ -135,6 +137,7 @@ export default function Home() {
           <div className="space-y-4">
             <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} />
             {error && <ErrorDisplay message={error} onRetry={reset} />}
+            {result && <ThemeSummary files={result.files} />}
             {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }} />}
           </div>
         )}
