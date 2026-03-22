@@ -67,7 +67,7 @@ export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function Th
       {!disabled && descLen === 0 && (
         <div className="flex flex-wrap gap-1.5 animate-[fadeIn_0.2s_ease-out]">
           {EXAMPLES.map((ex) => (
-            <button key={ex.label} type="button" onClick={() => { setDescription(ex.desc); setName(ex.label); }} className="px-3 py-1.5 text-xs rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-accent-soft)] transition-all">
+            <button key={ex.label} type="button" onClick={() => { setDescription(ex.desc); setName(ex.label); setShowConstraints(true); }} className="px-3 py-1.5 text-xs rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-accent-soft)] transition-all">
               {ex.label}
             </button>
           ))}
@@ -81,7 +81,7 @@ export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function Th
           <svg className={`w-4 h-4 text-[var(--color-text-muted)] transition-transform ${showConstraints ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
         </button>
 
-        {(showConstraints || name) && (
+        {showConstraints && (
           <div className="space-y-3 animate-[fadeIn_0.15s_ease-out]">
             <div>
               <label htmlFor="slug" className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">Theme Slug</label>
