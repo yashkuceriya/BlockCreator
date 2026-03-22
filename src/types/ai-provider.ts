@@ -11,4 +11,4 @@ export interface AIProvider {
   correctTemplates(errors: string[], previousOutput: string): Promise<Template[]>;
 }
 
-export type ProviderName = 'anthropic' | 'openai';
+export type ProviderName = 'anthropic' | 'openrouter' | 'auto';
