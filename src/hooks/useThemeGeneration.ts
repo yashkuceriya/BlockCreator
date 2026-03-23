@@ -105,5 +105,13 @@ export function useThemeGeneration() {
     setStartedAt(null);
   }, []);
 
-  return { state, progress, result, error, startedAt, generate, reset };
+  const loadResult = useCallback((data: GenerationResult) => {
+    setResult(data);
+    setState('complete');
+    setProgress([]);
+    setError(null);
+    setStartedAt(null);
+  }, []);
+
+  return { state, progress, result, error, startedAt, generate, reset, loadResult };
 }

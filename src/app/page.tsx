@@ -7,6 +7,7 @@ import { PlaygroundPreview } from '../components/PlaygroundPreview';
 import { SuccessCard } from '../components/SuccessCard';
 import { ThemeSummary } from '../components/ThemeSummary';
 import { ErrorDisplay } from '../components/ErrorDisplay';
+import { Sidebar } from '../components/Sidebar';
 import { useThemeGeneration } from '../hooks/useThemeGeneration';
 import { Button } from '../components/ui/button';
 
@@ -16,7 +17,7 @@ const STEPS = ['Analyzing Intent', 'Generating theme.json', 'Building Templates'
 const STEP_MAP: Record<string, number> = { 'theme-json': 1, patterns: 2, templates: 2, assembling: 3, complete: 3 };
 
 export default function Home() {
-  const { state, progress, result, error, startedAt, generate, reset } = useThemeGeneration();
+  const { state, progress, result, error, startedAt, generate, reset, loadResult } = useThemeGeneration();
   const [mobileTab, setMobileTab] = useState<MobileTab>('form');
   const formRef = useRef<HTMLFormElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -60,27 +61,26 @@ export default function Home() {
       </div>
 
       {/* Desktop layout */}
-      <div className="hidden lg:flex flex-1 min-h-0">
-        {/* Left — Form + Terminal */}
-        <div className="w-[440px] shrink-0 flex flex-col border-r border-[var(--color-border)]">
-          {/* Step progress */}
+      <div className="hidden lg:flex flex-1 min-h-0 relative">
+        {/* Sidebar */}
+        <Sidebar
+          currentResult={result}
+          onLoadProject={(p) => loadResult({ files: p.files, zipBase64: p.zipBase64, themeSlug: p.slug })}
+          onReset={reset}
+        />
+
+        {/* Form + Terminal */}
+        <div className="w-96 shrink-0 flex flex-col border-r border-[var(--color-border)]">
           {state !== 'idle' && (
             <div className="shrink-0 flex items-center border-b border-[var(--color-border)] bg-[var(--color-bg-card)] px-4 overflow-x-auto">
               {STEPS.map((label, i) => (
                 <span key={label} className={`py-2.5 px-3 text-[11px] font-medium whitespace-nowrap border-b-2 transition-colors ${
-                  i === currentStep
-                    ? 'border-[var(--color-accent)] text-[var(--color-accent)] font-semibold'
-                    : i < currentStep
-                      ? 'border-transparent text-[var(--color-text-secondary)]'
-                      : 'border-transparent text-[var(--color-text-muted)]'
-                }`}>
-                  {label}
-                </span>
+                  i === currentStep ? 'border-[var(--color-accent)] text-[var(--color-accent)] font-semibold' : i < currentStep ? 'border-transparent text-[var(--color-text-secondary)]' : 'border-transparent text-[var(--color-text-muted)]'
+                }`}>{label}</span>
               ))}
             </div>
           )}
 
-          {/* Scrollable form area */}
           <div className="flex-1 overflow-y-auto bg-[var(--color-bg-page)]">
             <div className="p-6 space-y-5">
               <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} />
@@ -94,7 +94,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right — Preview */}
+        {/* Preview */}
         <div role="region" aria-label="Theme preview" className="flex-1 min-w-0 bg-[var(--color-bg-page)]">
           <PlaygroundPreview themeFiles={result?.files} themeSlug={result?.themeSlug} />
         </div>
