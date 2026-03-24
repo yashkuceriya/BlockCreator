@@ -21,7 +21,7 @@ const LANDING_HTML = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
-  .landing-page { font-family: 'Inter', sans-serif; color: #2d3336; background: #f9f9fa; }
+  .landing-page { font-family: 'Inter', sans-serif; color: #2d3336; background: #f9f9fa; scroll-behavior: smooth; }
   .landing-page .newsreader { font-family: 'Newsreader', serif; }
   .landing-page .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
@@ -122,14 +122,14 @@ const LANDING_HTML = `
   <div class="nav-inner">
     <div class="brand newsreader">The Editorial Engine</div>
     <div class="nav-links">
-      <a href="#" class="active">Showcase</a>
-      <a href="#">Tutorials</a>
-      <a href="#">Pricing</a>
-      <a href="#">Documentation</a>
+      <a href="#features" class="active">Features</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#audience">For Teams</a>
+      <a href="https://github.com/yashkuceriya/BlockCreator" target="_blank" rel="noopener">GitHub</a>
     </div>
     <div class="nav-actions">
-      <button class="signin">Sign In</button>
-      <a href="/create" class="cta">Create Theme</a>
+      <a href="/create" class="signin" style="text-decoration:none;">Sign In</a>
+      <a href="/create" class="cta" style="text-decoration:none;">Create Theme</a>
     </div>
   </div>
 </nav>
@@ -168,7 +168,7 @@ const LANDING_HTML = `
 </div>
 
 <!-- Workflow Steps -->
-<div id="workflow" style="background:#f2f4f5;padding:6rem 0;">
+<div id="workflow" style="background:#f2f4f5;padding:6rem 0;scroll-margin-top:4rem;">
   <div class="section" style="text-align:center;">
     <h2 class="section-title newsreader">A Refined Workflow</h2>
     <div class="section-divider"></div>
@@ -202,7 +202,7 @@ const LANDING_HTML = `
 </div>
 
 <!-- Feature Bento -->
-<div style="background:#f2f4f5;padding:0 0 6rem;">
+<div id="features" style="background:#f2f4f5;padding:0 0 6rem;scroll-margin-top:4rem;">
   <div class="section" style="padding-top:0;">
     <div class="bento">
       <div class="card card-wide">
@@ -249,7 +249,7 @@ const LANDING_HTML = `
 </div>
 
 <!-- Audience -->
-<div class="section-alt" style="padding:6rem 0;">
+<div id="audience" class="section-alt" style="padding:6rem 0;scroll-margin-top:4rem;">
   <div class="section" style="text-align:center;">
     <h2 class="section-title newsreader" style="font-style:italic;">Built for the Curators of the Web</h2>
     <p class="section-subtitle" style="margin:0 auto;">Scalable solutions for teams that demand excellence without the overhead.</p>
@@ -277,8 +277,8 @@ const LANDING_HTML = `
 <div class="cta-section">
   <h2>Ready to define your <span class="accent">digital presence?</span></h2>
   <div class="buttons">
-    <a href="/create" class="btn-primary" style="padding:1.25rem 2.5rem;font-size:1.25rem;box-shadow:0 10px 30px rgba(23,100,145,0.2);">Get Started for Free</a>
-    <a href="#" class="btn-secondary newsreader" style="padding:1.25rem 2.5rem;font-size:1.25rem;">Book a Demo</a>
+    <a href="/create" class="btn-primary" style="padding:1.25rem 2.5rem;font-size:1.25rem;box-shadow:0 10px 30px rgba(23,100,145,0.2);text-decoration:none;">Get Started for Free</a>
+    <a href="#workflow" class="btn-secondary newsreader" style="padding:1.25rem 2.5rem;font-size:1.25rem;text-decoration:none;">See How It Works</a>
   </div>
   <p class="note">No credit card required. WordPress.org compatible.</p>
 </div>
@@ -288,10 +288,10 @@ const LANDING_HTML = `
   <div class="footer-inner">
     <div class="footer-brand newsreader">The Editorial Engine</div>
     <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">WordPress.org</a>
-      <a href="#">Open Source</a>
+      <a href="/create">Get Started</a>
+      <a href="#features">Features</a>
+      <a href="https://wordpress.org" target="_blank" rel="noopener">WordPress.org</a>
+      <a href="https://github.com/yashkuceriya/BlockCreator" target="_blank" rel="noopener">Open Source</a>
     </div>
     <div class="copyright">&copy; 2025 The Editorial Engine. Built for the Open Web.</div>
   </div>

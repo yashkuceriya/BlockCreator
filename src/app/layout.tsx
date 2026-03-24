@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="h-full overflow-hidden bg-[var(--color-bg-page)]">{children}</body>
+      <body className="h-full bg-[var(--color-bg-page)]">{children}</body>
     </html>
   );
 }

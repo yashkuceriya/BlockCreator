@@ -43,7 +43,7 @@ export default function Home() {
   }, [state]);
 
   return (
-    <div className="h-full flex flex-col text-[var(--color-text)]">
+    <div className="h-full overflow-hidden flex flex-col text-[var(--color-text)]">
       {/* Header */}
       <header role="banner" className="h-12 shrink-0 flex items-center justify-between px-5 bg-[var(--color-bg-card)] border-b border-[var(--color-border)]">
         <a href="/landing" className="text-sm font-bold text-[var(--color-accent)] hover:opacity-80 transition-opacity">The Editorial Engine</a>
