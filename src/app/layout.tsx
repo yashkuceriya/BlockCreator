@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WP Block Theme Generator",
-  description: "Generate WordPress Block Themes with AI",
+  title: "The Editorial Engine | AI-Powered WordPress Block Themes",
+  description: "Generate production-ready WordPress block themes from natural language. Complete with theme.json, templates, patterns, and style variations.",
 };
 
 export default function RootLayout({
