@@ -18,16 +18,39 @@ Description: "${prompt.description}"`;
 
   userPrompt += `
 
-Include:
-- A rich color palette (at least 6 colors including primary, secondary, accent, background, foreground, and muted variants)
-- At least 2 font families (heading and body) using system fonts or common web-safe fonts
-- 5 fluid font sizes (small, medium, large, x-large, xx-large)
-- Sensible spacing and layout settings (contentSize, wideSize)
-- Global styles for color, typography, and spacing
-- Element styles for links, headings, and buttons
-- templateParts array with at least: header (area: header), footer (area: footer)
-- appearanceTools: true
-- useRootPaddingAwareAlignments: true
+REQUIRED STRUCTURE:
+
+1. settings.color.palette — at least 6 colors: primary, secondary, accent, base (background), contrast (foreground text), muted. Use VISUALLY DISTINCT colors that match the description, not generic grays.
+
+2. settings.typography.fontFamilies — at least 2: one for headings, one for body. Use real font stacks like "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" or named fonts like "Georgia, serif".
+
+3. settings.typography.fontSizes — 5 fluid sizes (small, medium, large, x-large, xx-large).
+
+4. settings.spacing — units and spacingScale.
+
+5. settings.layout — contentSize (e.g. "800px") and wideSize (e.g. "1200px").
+
+6. settings.appearanceTools — true.
+   settings.useRootPaddingAwareAlignments — true.
+
+7. styles — THIS IS CRITICAL. You MUST set global styles that actually apply the palette:
+   styles.color.background — use "var(--wp--preset--color--base)"
+   styles.color.text — use "var(--wp--preset--color--contrast)"
+   styles.typography.fontFamily — use body font via "var(--wp--preset--font-family--body)"
+   styles.typography.fontSize — use "var(--wp--preset--font-size--medium)"
+   styles.typography.lineHeight — e.g. "1.7"
+   styles.spacing.padding — use root padding for alignment
+
+8. styles.elements — style these elements:
+   styles.elements.link.color.text — use "var(--wp--preset--color--primary)"
+   styles.elements.heading.typography.fontFamily — use "var(--wp--preset--font-family--heading)"
+   styles.elements.heading.color.text — use "var(--wp--preset--color--contrast)"
+   styles.elements.button.color.background — use "var(--wp--preset--color--primary)"
+   styles.elements.button.color.text — use "var(--wp--preset--color--base)"
+
+9. templateParts — include: header (area: header), footer (area: footer).
+
+The theme MUST look visually styled when activated — not like default WordPress. The background color, text color, headings, links, and buttons must all reflect the generated palette.
 
 Respond with ONLY the theme.json object as valid JSON. No wrapping, no explanation.`;
 
