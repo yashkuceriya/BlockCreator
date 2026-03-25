@@ -23,7 +23,12 @@ DESIGN PRINCIPLES:
 - Use semantic block structures: wp:group for sections, wp:columns for grids, wp:cover for hero areas
 - Template parts: <!-- wp:template-part {"slug":"header","area":"header"} /-->
 - Pattern references: <!-- wp:pattern {"slug":"theme-slug/pattern-slug"} /-->
-- Create visually distinct, non-generic designs — avoid bland default layouts
+- Create visually STRIKING designs — bold colors, generous spacing, strong typography
+- NEVER produce generic white-page-with-black-text output — every theme must have visible color, styled backgrounds, and design personality
+- Use wp:cover blocks with background colors for visually impactful sections
+- Add spacing attributes to every section: {"style":{"spacing":{"padding":{"top":"...","bottom":"..."}}}}
+- Use contrasting background colors between adjacent sections to create visual rhythm
+- Make the header and footer visually styled with background colors — never plain white
 
 CONTENT SAFETY:
 - Generate only professional, appropriate content suitable for public websites

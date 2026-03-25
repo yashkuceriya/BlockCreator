@@ -65,11 +65,28 @@ export async function mountTheme(
     await writeFile(`${basePath}/patterns/${name}`, content);
   }
 
-  // Activate the theme
+  // Activate theme and set a static front page using the "home" template
   await client.run({
     code: `<?php
       require_once '/wordpress/wp-load.php';
       switch_theme('${safeName}');
+
+      // Create a front page that uses the "home" template
+      $front_page_id = wp_insert_post(array(
+        'post_title'   => 'Home',
+        'post_status'  => 'publish',
+        'post_type'    => 'page',
+        'post_content' => '',
+        'page_template' => '',
+      ));
+
+      if ($front_page_id && !is_wp_error($front_page_id)) {
+        update_option('show_on_front', 'page');
+        update_option('page_on_front', $front_page_id);
+        // Set the template to "home" via post meta
+        update_post_meta($front_page_id, '_wp_page_template', 'home');
+      }
+
       echo 'Theme activated: ${safeName}';
     ?>`,
   });
