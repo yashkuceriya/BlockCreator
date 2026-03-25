@@ -28,7 +28,7 @@ export class OpenRouterProvider implements AIProvider {
       },
       body: JSON.stringify({
         model: this.model,
-        max_tokens: 8192,
+        max_tokens: 16384,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: userMessage },
