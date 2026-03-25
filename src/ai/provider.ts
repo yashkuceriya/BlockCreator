@@ -18,19 +18,19 @@ export function createProvider(name?: ProviderName): AIProvider {
 }
 
 /**
- * Auto-select the cheapest available provider.
- * Priority: OpenRouter (cheaper) > Anthropic (direct)
+ * Auto-select the best available provider.
+ * Priority: Anthropic (most reliable) > OpenRouter (fallback)
  */
 function createAutoProvider(): AIProvider {
+  if (process.env.ANTHROPIC_API_KEY) {
+    return new AnthropicProvider();
+  }
   if (process.env.OPENROUTER_API_KEY) {
     try {
       return new OpenRouterProvider();
     } catch {
       // fall through
     }
-  }
-  if (process.env.ANTHROPIC_API_KEY) {
-    return new AnthropicProvider();
   }
   throw new Error('No AI provider configured. Set ANTHROPIC_API_KEY or OPENROUTER_API_KEY in .env');
 }

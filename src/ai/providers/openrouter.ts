@@ -14,7 +14,7 @@ export class OpenRouterProvider implements AIProvider {
     if (!this.apiKey) {
       throw new Error('OPENROUTER_API_KEY is not set');
     }
-    this.model = process.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-4-5-20251001';
+    this.model = process.env.OPENROUTER_MODEL || 'anthropic/claude-3.5-haiku';
   }
 
   private async complete(userMessage: string): Promise<string> {
