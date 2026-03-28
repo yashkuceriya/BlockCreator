@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePlayground } from '../hooks/usePlayground';
 import { ThemeFiles } from '../types';
 
@@ -13,8 +13,6 @@ export function PlaygroundPreview({ themeFiles, themeSlug }: PlaygroundPreviewPr
   const { ready, loading, error, iframeRef, boot, loadTheme } = usePlayground();
   const [view, setView] = useState<'preview' | 'files'>('preview');
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const mounted = useRef(false);
-
   useEffect(() => {
     if (themeFiles && themeSlug) {
       if (ready) loadTheme(themeFiles, themeSlug);
@@ -24,22 +22,26 @@ export function PlaygroundPreview({ themeFiles, themeSlug }: PlaygroundPreviewPr
 
   const hasTheme = !!themeFiles;
   const showEmpty = !hasTheme && !loading && !error;
-  if (hasTheme || loading) mounted.current = true;
 
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar */}
-      <div className="h-10 shrink-0 flex items-center justify-between px-4 border-b border-[var(--color-border)] bg-[var(--color-bg-card)]">
+      <div className="h-11 shrink-0 flex items-center justify-between px-4 border-b border-[var(--color-border)] bg-[var(--color-bg-card)]">
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-            <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
           </div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">Live Preview</span>
+          <div className="hidden sm:flex items-center gap-1.5 ml-1">
+            <svg className="w-3.5 h-3.5 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+            <span className="text-[11px] text-[var(--color-text-muted)]">
+              {hasTheme ? `${themeSlug || 'theme'}.developer.blog` : 'Live Preview'}
+            </span>
+          </div>
         </div>
         {hasTheme && !loading && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 bg-[var(--color-bg-muted)] rounded-lg p-0.5">
             <ToolBtn active={view === 'preview'} onClick={() => setView('preview')} title="Preview">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>
             </ToolBtn>
@@ -52,63 +54,85 @@ export function PlaygroundPreview({ themeFiles, themeSlug }: PlaygroundPreviewPr
 
       <div className="flex-1 min-h-0 relative">
         {loading && (
-          <Overlay><div className="animate-spin w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full mx-auto mb-3" /><p className="text-[var(--color-text-muted)] text-sm">Loading WordPress Playground...</p></Overlay>
+          <Overlay>
+            <div className="relative">
+              <div className="w-12 h-12 border-2 border-[var(--color-accent)]/20 rounded-full" />
+              <div className="absolute inset-0 w-12 h-12 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+            </div>
+            <p className="text-[var(--color-text-muted)] text-sm mt-4">Loading WordPress Playground...</p>
+          </Overlay>
         )}
 
         {error && !loading && (
-          <Overlay><p className="text-[var(--color-error)] text-sm font-medium mb-1">Playground failed to load</p><p className="text-[var(--color-text-muted)] text-xs max-w-sm">{error}</p></Overlay>
+          <Overlay>
+            <div className="w-12 h-12 rounded-full bg-[var(--color-error-soft)] flex items-center justify-center mb-3">
+              <svg className="w-6 h-6 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+            </div>
+            <p className="text-[var(--color-error)] text-sm font-medium mb-1">Playground failed to load</p>
+            <p className="text-[var(--color-text-muted)] text-xs max-w-sm">{error}</p>
+          </Overlay>
         )}
 
         {showEmpty && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center max-w-xs px-6 animate-[fadeIn_0.3s_ease-out]">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-[var(--radius-xl)] bg-[var(--color-accent-soft)] border border-[var(--color-accent)]/15 flex items-center justify-center">
-                <svg className="w-7 h-7 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[var(--color-bg-page)] to-[var(--color-bg-muted)]">
+            <div className="text-center max-w-xs px-6 animate-[fadeIn_0.4s_ease-out]">
+              {/* Animated illustration */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-3xl bg-[var(--color-accent-soft)] animate-[float_4s_ease-in-out_infinite]" />
+                <div className="absolute inset-2 rounded-2xl bg-[var(--color-accent)]/8 border border-[var(--color-accent)]/10 flex items-center justify-center animate-[float_4s_ease-in-out_infinite_0.3s]">
+                  <svg className="w-10 h-10 text-[var(--color-accent)]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-[var(--color-text)] mb-1.5">Live Preview</h3>
+              <h3 className="text-base font-bold text-[var(--color-text)] mb-2">Live Preview</h3>
               <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">
-                Your generated theme will render here in a live WordPress environment.
+                Your generated theme will render here in a live WordPress environment powered by Playground.
               </p>
             </div>
           </div>
         )}
 
         {view === 'files' && hasTheme && themeFiles && (
-          <div className="absolute inset-0 flex">
-            <div className="w-52 shrink-0 border-r border-[var(--color-border)] overflow-y-auto p-3 bg-[var(--color-bg-sidebar)]">
+          <div className="absolute inset-0 flex animate-[fadeIn_0.2s_ease-out]">
+            <div className="w-56 shrink-0 border-r border-[var(--color-border)] overflow-y-auto p-3 bg-[var(--color-bg-sidebar)]">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-2 px-1">Theme Files</p>
               <FileTree themeFiles={themeFiles} onSelect={setSelectedFile} selected={selectedFile} />
             </div>
-            <div className="flex-1 overflow-auto p-4">
+            <div className="flex-1 overflow-auto p-4 bg-[var(--color-bg-page)]">
               {selectedFile ? (
-                <><div className="text-xs text-[var(--color-text-muted)] mb-2 font-mono">{selectedFile}</div><pre className="text-xs text-[var(--color-text-secondary)] font-mono whitespace-pre-wrap bg-[var(--color-bg-muted)] rounded-[var(--radius-md)] p-4 border border-[var(--color-border)]">{getFileContent(themeFiles, selectedFile)}</pre></>
+                <>
+                  <div className="flex items-center gap-2 mb-3">
+                    <FileIcon ext={selectedFile.split('.').pop()} />
+                    <span className="text-xs text-[var(--color-text-muted)] font-mono">{selectedFile}</span>
+                  </div>
+                  <pre className="text-xs text-[var(--color-text-secondary)] font-mono whitespace-pre-wrap bg-[var(--color-bg-card)] rounded-[var(--radius-lg)] p-4 border border-[var(--color-border)] shadow-[var(--shadow-card)] leading-relaxed">{getFileContent(themeFiles, selectedFile)}</pre>
+                </>
               ) : (
-                <div className="h-full flex items-center justify-center text-[var(--color-text-muted)] text-sm">Select a file to view</div>
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <svg className="w-8 h-8 text-[var(--color-text-muted)]/30 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    <p className="text-[var(--color-text-muted)] text-sm">Select a file to view</p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
         )}
 
-        {mounted.current && (
-          <iframe ref={iframeRef} className={view === 'preview' && hasTheme && !error ? 'absolute inset-0 w-full h-full' : 'absolute inset-0 w-0 h-0 opacity-0 pointer-events-none'} />
-        )}
-
-        {showEmpty && (
-          <div className="absolute bottom-3 right-4 text-[10px] uppercase tracking-widest text-[var(--color-text-muted)]/40 font-semibold select-none">Editor Canvas</div>
-        )}
+        <iframe ref={iframeRef} className={view === 'preview' && hasTheme && !error ? 'absolute inset-0 w-full h-full' : 'absolute inset-0 w-0 h-0 opacity-0 pointer-events-none'} />
       </div>
     </div>
   );
 }
 
 function Overlay({ children }: { children: React.ReactNode }) {
-  return <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[var(--color-bg-page)]/95 text-center">{children}</div>;
+  return <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[var(--color-bg-page)]/95 backdrop-blur-sm text-center">{children}</div>;
 }
 
 function ToolBtn({ active, onClick, title, children }: { active: boolean; onClick: () => void; title: string; children: React.ReactNode }) {
-  return <button onClick={onClick} title={title} className={`p-1.5 rounded-[var(--radius-sm)] transition-colors ${active ? 'text-[var(--color-accent)] bg-[var(--color-accent-soft)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}>{children}</button>;
+  return <button onClick={onClick} title={title} className={`p-1.5 rounded-md transition-all duration-200 ${active ? 'text-[var(--color-accent)] bg-[var(--color-bg-card)] shadow-sm' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'}`}>{children}</button>;
 }
 
 function FileIcon({ isDir, ext }: { isDir?: boolean; ext?: string }) {
@@ -125,8 +149,8 @@ function FileTree({ themeFiles, onSelect, selected }: { themeFiles: ThemeFiles; 
     <div className="font-mono text-xs space-y-px">
       {roots.map(f => <TreeRow key={f} name={f} ext={f.split('.').pop()} active={selected === f} onClick={() => onSelect(f)} />)}
       {dirs.map(d => (
-        <div key={d.name}>
-          <div className="flex items-center gap-1.5 py-1 text-[var(--color-text-secondary)]"><FileIcon isDir /><span>{d.name}/</span></div>
+        <div key={d.name} className="mt-2">
+          <div className="flex items-center gap-1.5 py-1 px-1 text-[var(--color-text-secondary)] font-semibold"><FileIcon isDir /><span>{d.name}/</span></div>
           {d.files.map(f => <TreeRow key={f} name={f} ext={f.split('.').pop()} indent active={selected === `${d.name}/${f}`} onClick={() => onSelect(`${d.name}/${f}`)} />)}
         </div>
       ))}
@@ -135,7 +159,7 @@ function FileTree({ themeFiles, onSelect, selected }: { themeFiles: ThemeFiles; 
 }
 
 function TreeRow({ name, ext, indent, active, onClick }: { name: string; ext?: string; indent?: boolean; active: boolean; onClick: () => void }) {
-  return <button onClick={onClick} className={`w-full flex items-center gap-1.5 py-1 px-1.5 rounded-[var(--radius-sm)] text-left transition-colors ${indent ? 'ml-4' : ''} ${active ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}><FileIcon ext={ext} /><span>{name}</span></button>;
+  return <button onClick={onClick} className={`w-full flex items-center gap-1.5 py-1.5 px-2 rounded-[var(--radius-md)] text-left transition-all duration-150 ${indent ? 'ml-3' : ''} ${active ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)] font-medium' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}><FileIcon ext={ext} /><span className="truncate">{name}</span></button>;
 }
 
 function getFileContent(files: ThemeFiles, path: string): string {

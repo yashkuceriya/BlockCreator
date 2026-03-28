@@ -38,17 +38,29 @@ export function ErrorDisplay({ message, onRetry }: ErrorDisplayProps) {
   const friendlyMessage = useMemo(() => humanizeError(message), [message]);
 
   return (
-    <div className="bg-[var(--color-error-soft)] border border-[var(--color-error)]/20 rounded-[var(--radius-lg)] p-4 animate-[fadeIn_0.2s_ease-out]">
+    <div className="relative overflow-hidden bg-[var(--color-error-soft)] border border-[var(--color-error)]/15 rounded-[var(--radius-xl)] p-4 animate-[fadeInScale_0.3s_ease-out]">
+      {/* Error accent bar */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--color-error)]" />
+
       <div className="flex items-start gap-3">
-        <svg className="w-5 h-5 text-[var(--color-error)] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <div className="w-9 h-9 rounded-xl bg-[var(--color-error)]/10 flex items-center justify-center shrink-0">
+          <svg className="w-4.5 h-4.5 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[var(--color-error)] text-sm font-medium">Generation failed</p>
+          <p className="text-[var(--color-error)] text-sm font-semibold">Generation failed</p>
           <p className="text-[var(--color-text-secondary)] text-sm mt-1 leading-relaxed">{friendlyMessage}</p>
         </div>
       </div>
-      {onRetry && <div className="mt-3"><Button onClick={onRetry} variant="danger" size="sm">Try Again</Button></div>}
+      {onRetry && (
+        <div className="mt-3 ml-12">
+          <Button onClick={onRetry} variant="danger" size="sm">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
+            Try Again
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
