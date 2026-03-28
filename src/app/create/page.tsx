@@ -9,7 +9,6 @@ import { ThemeSummary } from '../../components/ThemeSummary';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
 import { Sidebar } from '../../components/Sidebar';
 import { useThemeGeneration } from '../../hooks/useThemeGeneration';
-import { Button } from '../../components/ui/button';
 import { Confetti } from '../../components/Confetti';
 import { GenerationSkeleton } from '../../components/GenerationSkeleton';
 import { DEMO_THEME_FILES, DEMO_THEME_SLUG } from '../../lib/demo-theme';
@@ -72,21 +71,21 @@ export default function Home() {
   return (
     <div className="h-full overflow-hidden flex flex-col text-[var(--color-text)] bg-[var(--color-bg-page)]">
       <Confetti active={showConfetti} />
-      {/* Header */}
-      <header role="banner" className="h-12 shrink-0 flex items-center justify-between px-4 bg-white border-b border-[var(--color-border)]">
+      {/* Header — dark navy bar */}
+      <header role="banner" className="h-12 shrink-0 flex items-center justify-between px-5 bg-[var(--color-primary)] text-white">
         <a href="/landing" className="flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)] flex items-center justify-center">
-            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" /></svg>
+          <div className="w-6 h-6 rounded-md bg-[var(--color-accent)] flex items-center justify-center">
+            <svg className="w-3 h-3 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20"><path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" /></svg>
           </div>
-          <span className="text-[13px] font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">The Editorial Engine</span>
+          <span className="text-[13px] font-semibold text-white/90 group-hover:text-[var(--color-accent)] transition-colors">The Editorial Engine</span>
         </a>
         <div className="flex items-center gap-3">
           <KeyboardHint />
           {state !== 'idle' && (
-            <Button onClick={reset} variant="ghost" size="sm" className="gap-1.5">
+            <button onClick={reset} className="flex items-center gap-1.5 h-7 px-2.5 text-xs text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
               Start Over
-            </Button>
+            </button>
           )}
         </div>
       </header>
@@ -207,8 +206,8 @@ function MobileTabBtn({ active, onClick, children, icon, dot }: { active: boolea
 function KeyboardHint() {
   const mod = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent) ? '\u2318' : 'Ctrl';
   return (
-    <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] text-[var(--color-text-muted)]">
-      <kbd className="px-1.5 py-0.5 rounded-md bg-[var(--color-bg-hover)] border border-[var(--color-border)] font-mono text-[9px] shadow-[0_1px_0_var(--color-border)]">{mod}+G</kbd>
+    <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] text-white/40">
+      <kbd className="px-1.5 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono text-[9px] text-white/50">{mod}+G</kbd>
       <span>Generate</span>
     </span>
   );

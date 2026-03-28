@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ThemeFiles } from '../types';
-import { Button } from './ui/button';
+
 
 interface SavedProject {
   id: string;
@@ -62,26 +62,26 @@ export function Sidebar({ currentResult, onLoadProject, onReset }: SidebarProps)
   };
 
   return (
-    <aside className="w-[200px] shrink-0 flex flex-col bg-[var(--color-bg-sidebar)] border-r border-[var(--color-border)]">
-      <div className="h-2" />
+    <aside className="w-[200px] shrink-0 flex flex-col bg-[var(--color-bg-sidebar)] text-white">
+      <div className="h-3" />
 
-      <nav className="flex-1 p-2.5 space-y-0.5">
-        <NavBtn active={activePanel === 'projects'} onClick={() => togglePanel('projects')} icon={<FolderIcon />} badge={projects.length > 0 ? projects.length : undefined}>
+      <nav className="flex-1 px-3 space-y-0.5">
+        <SidebarNavBtn active={activePanel === 'projects'} onClick={() => togglePanel('projects')} icon={<FolderIcon />} badge={projects.length > 0 ? projects.length : undefined}>
           Projects
-        </NavBtn>
-        <NavBtn active={activePanel === 'settings'} onClick={() => togglePanel('settings')} icon={<CogIcon />}>
+        </SidebarNavBtn>
+        <SidebarNavBtn active={activePanel === 'settings'} onClick={() => togglePanel('settings')} icon={<CogIcon />}>
           Settings
-        </NavBtn>
-        <NavBtn active={activePanel === 'help'} onClick={() => togglePanel('help')} icon={<HelpIcon />}>
+        </SidebarNavBtn>
+        <SidebarNavBtn active={activePanel === 'help'} onClick={() => togglePanel('help')} icon={<HelpIcon />}>
           Help
-        </NavBtn>
+        </SidebarNavBtn>
       </nav>
 
-      <div className="p-3 border-t border-[var(--color-border)]">
-        <Button onClick={onReset} variant="primary" size="md" className="w-full text-xs gap-1.5">
+      <div className="p-3 border-t border-white/10">
+        <button onClick={onReset} className="w-full flex items-center justify-center gap-1.5 h-9 px-4 text-xs font-medium bg-[var(--color-accent)] text-[var(--color-primary)] rounded-[var(--radius-lg)] hover:brightness-110 transition-all active:scale-[0.98]">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
           New Theme
-        </Button>
+        </button>
       </div>
 
       {/* Slide-out panel */}
@@ -89,7 +89,7 @@ export function Sidebar({ currentResult, onLoadProject, onReset }: SidebarProps)
         <>
           {/* Backdrop */}
           <div className="fixed inset-0 z-10" onClick={() => setActivePanel(null)} />
-          <div className="absolute left-[200px] top-0 bottom-0 w-80 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] shadow-xl z-20 flex flex-col animate-[slideInRight_0.2s_ease-out]">
+          <div className="absolute left-[200px] top-0 bottom-0 w-80 bg-white border-r border-[var(--color-border)] shadow-xl z-20 flex flex-col animate-[slideInRight_0.15s_ease-out]">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--color-border)]">
               <span className="text-sm font-bold text-[var(--color-text)]">
                 {activePanel === 'projects' ? 'Projects' : activePanel === 'settings' ? 'Settings' : 'Help'}
@@ -234,13 +234,13 @@ function KbdRow({ keys, desc }: { keys: string[]; desc: string }) {
   );
 }
 
-function NavBtn({ active, onClick, icon, children, badge }: { active: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode; badge?: number }) {
+function SidebarNavBtn({ active, onClick, icon, children, badge }: { active: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode; badge?: number }) {
   return (
-    <button onClick={onClick} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-[var(--radius-lg)] text-[13px] transition-all duration-200 ${active ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)] font-medium shadow-sm' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}>
-      <span className={`transition-colors ${active ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-muted)]'}`}>{icon}</span>
+    <button onClick={onClick} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-md)] text-[13px] transition-all duration-150 ${active ? 'bg-white/10 text-[var(--color-accent)] font-medium' : 'text-white/60 hover:text-white/90 hover:bg-white/5'}`}>
+      <span className={active ? 'text-[var(--color-accent)]' : 'text-white/40'}>{icon}</span>
       {children}
       {badge !== undefined && badge > 0 && (
-        <span className="ml-auto text-[9px] font-bold bg-[var(--color-accent-soft)] text-[var(--color-accent)] px-2 py-0.5 rounded-full border border-[var(--color-accent)]/10">{badge}</span>
+        <span className="ml-auto text-[9px] font-bold bg-[var(--color-accent)]/20 text-[var(--color-accent)] px-1.5 py-0.5 rounded-full">{badge}</span>
       )}
     </button>
   );
