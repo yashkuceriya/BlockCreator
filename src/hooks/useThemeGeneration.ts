@@ -3,6 +3,11 @@
 import { useState, useCallback, useRef } from 'react';
 import { GenerationProgress, ThemePrompt, ThemeFiles } from '../types';
 
+export interface TimestampedProgress extends GenerationProgress {
+  /** Epoch ms when this event was received by the client */
+  receivedAt: number;
+}
+
 type GenerationState = 'idle' | 'generating' | 'previewing' | 'complete' | 'error';
 
 interface GenerationResult {
@@ -13,7 +18,7 @@ interface GenerationResult {
 
 export function useThemeGeneration() {
   const [state, setState] = useState<GenerationState>('idle');
-  const [progress, setProgress] = useState<GenerationProgress[]>([]);
+  const [progress, setProgress] = useState<TimestampedProgress[]>([]);
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [startedAt, setStartedAt] = useState<number | null>(null);
@@ -32,10 +37,14 @@ export function useThemeGeneration() {
     setStartedAt(Date.now());
 
     try {
+      // Read user's provider preference from localStorage
+      let providerPref: string | undefined;
+      try { providerPref = localStorage.getItem('wp-theme-provider') || undefined; } catch { /* SSR safe */ }
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(prompt),
+        body: JSON.stringify({ ...prompt, provider: providerPref }),
         signal: controller.signal,
       });
 
@@ -68,7 +77,8 @@ export function useThemeGeneration() {
           if (line.startsWith('data: ')) {
             try {
               const data: GenerationProgress = JSON.parse(line.slice(6));
-              setProgress((prev) => [...prev, data]);
+              const timestamped: TimestampedProgress = { ...data, receivedAt: Date.now() };
+              setProgress((prev) => [...prev, timestamped]);
 
               if (data.step === 'error') {
                 setError(data.message);

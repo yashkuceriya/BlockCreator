@@ -6,6 +6,8 @@ import { buildPatternsPrompt, buildPatternsCorrectionPrompt } from '../prompts/p
 import { buildTemplatesPrompt, buildTemplatesCorrectionPrompt } from '../prompts/templates';
 import { stripMarkdownCodeFence } from '../../lib/sanitize';
 
+const PROVIDER_TIMEOUT_MS = 120_000; // 2 minutes per AI call
+
 export class AnthropicProvider implements AIProvider {
   private client: Anthropic;
   private model: string;
@@ -21,6 +23,8 @@ export class AnthropicProvider implements AIProvider {
       max_tokens: 16384,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }],
+    }, {
+      timeout: PROVIDER_TIMEOUT_MS,
     });
 
     const textBlock = response.content.find((c) => c.type === 'text');

@@ -1,24 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { GenerationProgress } from '../types';
+import { useEffect, useRef, useState } from 'react';
 import { Badge } from './ui/badge';
+import { TimestampedProgress } from '../hooks/useThemeGeneration';
 
 interface GenerationTerminalProps {
-  logs: GenerationProgress[];
+  logs: TimestampedProgress[];
   startedAt?: number | null;
 }
 
-function ts(d: Date) { return d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+function ts(epoch: number) { return new Date(epoch).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
 
 export function GenerationTerminal({ logs, startedAt }: GenerationTerminalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [elapsed, setElapsed] = useState(0);
-
-  const timestampedLogs = useMemo(() => {
-    const now = ts(new Date());
-    return logs.map((log) => ({ log, time: now }));
-  }, [logs]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -89,9 +84,9 @@ export function GenerationTerminal({ logs, startedAt }: GenerationTerminalProps)
 
       {/* Log entries */}
       <div ref={containerRef} className="px-5 py-3 font-mono text-xs max-h-52 overflow-y-auto space-y-1.5">
-        {timestampedLogs.map(({ log, time }, i) => (
+        {logs.map((log, i) => (
           <div key={i} className="flex items-start gap-2.5 animate-[fadeIn_0.15s_ease-out] py-0.5">
-            <span className="text-[#89b4fa]/50 shrink-0">{time}</span>
+            <span className="text-[#89b4fa]/50 shrink-0">{ts(log.receivedAt)}</span>
             <Badge variant={log.step as 'theme-json' | 'patterns' | 'templates' | 'assembling' | 'complete' | 'error'}>
               {log.step === 'theme-json' ? 'JSON' : log.step}
             </Badge>

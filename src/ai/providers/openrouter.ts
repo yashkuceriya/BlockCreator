@@ -5,6 +5,8 @@ import { buildPatternsPrompt, buildPatternsCorrectionPrompt } from '../prompts/p
 import { buildTemplatesPrompt, buildTemplatesCorrectionPrompt } from '../prompts/templates';
 import { stripMarkdownCodeFence } from '../../lib/sanitize';
 
+const PROVIDER_TIMEOUT_MS = 120_000; // 2 minutes per AI call
+
 export class OpenRouterProvider implements AIProvider {
   private apiKey: string;
   private model: string;
@@ -34,6 +36,7 @@ export class OpenRouterProvider implements AIProvider {
           { role: 'user', content: userMessage },
         ],
       }),
+      signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
     });
 
     if (!response.ok) {
