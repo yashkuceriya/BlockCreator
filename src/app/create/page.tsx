@@ -15,7 +15,12 @@ import { DEMO_THEME_FILES, DEMO_THEME_SLUG } from '../../lib/demo-theme';
 
 type MobileTab = 'form' | 'preview' | 'logs';
 
-const STEPS = ['Analyzing Intent', 'Generating theme.json', 'Building Templates', 'Packaging ZIP'] as const;
+const STEPS = [
+  { label: 'Concept', icon: 'M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z' },
+  { label: 'Engine', icon: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75' },
+  { label: 'Assemble', icon: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z' },
+  { label: 'Export', icon: 'M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3' },
+] as const;
 const STEP_MAP: Record<string, number> = { 'theme-json': 1, patterns: 2, templates: 2, assembling: 3, complete: 3 };
 
 export default function Home() {
@@ -27,7 +32,6 @@ export default function Home() {
   const currentStep = progress.length > 0 ? STEP_MAP[progress[progress.length - 1].step] ?? 0 : 0;
   const [showConfetti, setShowConfetti] = useState(false);
 
-  // Trigger confetti when generation completes
   useEffect(() => {
     if (state !== 'complete' || !result) return;
     const showTimer = setTimeout(() => setShowConfetti(true), 50);
@@ -69,104 +73,130 @@ export default function Home() {
   }, [state]);
 
   return (
-    <div className="h-full overflow-hidden flex flex-col text-[var(--color-text)] bg-[var(--color-bg-page)]">
+    <div className="h-full overflow-hidden flex flex-col bg-[var(--color-bg-page)] text-[var(--color-text)]">
       <Confetti active={showConfetti} />
-      {/* Header — dark navy bar */}
-      <header role="banner" className="h-12 shrink-0 flex items-center justify-between px-5 bg-[var(--color-primary)] text-white">
-        <a href="/landing" className="flex items-center gap-2.5 group">
-          <div className="w-6 h-6 rounded-md bg-[var(--color-accent)] flex items-center justify-center">
-            <svg className="w-3 h-3 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 20 20"><path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" /></svg>
-          </div>
-          <span className="text-[13px] font-semibold text-white/90 group-hover:text-[var(--color-accent)] transition-colors">The Editorial Engine</span>
+
+      {/* Top Nav */}
+      <nav className="h-14 shrink-0 flex items-center justify-between px-6 bg-[var(--color-bg-page)]/70 backdrop-blur-xl border-b border-[var(--color-border)]/10 z-30">
+        <a href="/landing" className="text-lg font-bold tracking-tight text-[var(--color-primary-container)] italic font-serif">
+          The Editorial Engine
         </a>
+        <div className="hidden md:flex items-center gap-6 text-sm">
+          <a href="/landing" className="text-[var(--color-text-muted)] hover:text-[var(--color-primary-container)] transition-colors">Product</a>
+          <a href="#" className="text-[var(--color-primary-container)] font-semibold border-b-2 border-[var(--color-primary-container)] pb-0.5">Generator</a>
+        </div>
         <div className="flex items-center gap-3">
           <KeyboardHint />
           {state !== 'idle' && (
-            <button onClick={reset} className="flex items-center gap-1.5 h-7 px-2.5 text-xs text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
-              Start Over
-            </button>
+            <button onClick={reset} className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary-container)] transition-colors font-medium">Start Over</button>
           )}
+          <button onClick={() => state === 'idle' ? loadDemo() : undefined} className="px-4 py-1.5 text-xs font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary-container)] transition-colors">Try Demo</button>
+          <a href="/create" className="px-4 py-1.5 text-xs font-medium bg-[var(--color-primary)] text-white rounded-md hover:opacity-90 transition-all active:scale-[0.98]">Get Started</a>
         </div>
-      </header>
+      </nav>
 
       {/* Mobile tab bar */}
-      <div className="lg:hidden shrink-0 flex border-b border-[var(--color-border)] bg-[var(--color-bg-card)]">
-        <MobileTabBtn active={mobileTab === 'form'} onClick={() => setMobileTab('form')} icon="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z">Create</MobileTabBtn>
-        <MobileTabBtn active={mobileTab === 'preview'} onClick={() => setMobileTab('preview')} icon="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z">Preview</MobileTabBtn>
-        <MobileTabBtn active={mobileTab === 'logs'} onClick={() => setMobileTab('logs')} icon="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" dot={progress.length > 0}>Log</MobileTabBtn>
+      <div className="lg:hidden shrink-0 flex border-b border-[var(--color-border)]/20 bg-[var(--color-bg-page)]">
+        <MobileTabBtn active={mobileTab === 'form'} onClick={() => setMobileTab('form')}>Create</MobileTabBtn>
+        <MobileTabBtn active={mobileTab === 'preview'} onClick={() => setMobileTab('preview')}>Preview</MobileTabBtn>
+        <MobileTabBtn active={mobileTab === 'logs'} onClick={() => setMobileTab('logs')} dot={progress.length > 0}>Log</MobileTabBtn>
       </div>
 
       {/* Desktop layout */}
-      <div id="main-content" className="hidden lg:flex flex-1 min-h-0 relative">
-        {/* Sidebar */}
+      <div id="main-content" className="hidden lg:flex flex-1 min-h-0">
         <Sidebar
           currentResult={result}
           onLoadProject={(p) => loadResult({ files: p.files, zipBase64: p.zipBase64, themeSlug: p.slug })}
           onReset={reset}
         />
 
-        {/* Form + Terminal */}
-        <div className="w-[400px] shrink-0 flex flex-col border-r border-[var(--color-border)] bg-white">
-          {/* Step progress */}
-          {state !== 'idle' && (
-            <div className="shrink-0 border-b border-[var(--color-border)] bg-[var(--color-bg-card)] px-1">
-              <div className="flex items-center">
-                {STEPS.map((label, i) => {
+        {/* Main workspace */}
+        <section className="flex-1 overflow-y-auto bg-[var(--color-bg-page)] p-8">
+          <div className="max-w-5xl mx-auto space-y-10">
+
+            {/* Step progress */}
+            {state !== 'idle' && (
+              <div className="flex items-center justify-center gap-0 max-w-lg mx-auto">
+                {STEPS.map((step, i) => {
                   const isActive = i === currentStep;
                   const isDone = i < currentStep;
                   return (
-                    <div key={label} className="flex-1 relative">
-                      <div className={`py-3 px-3 text-[11px] font-medium text-center transition-all duration-300 ${
-                        isActive ? 'text-[var(--color-accent)] font-semibold' : isDone ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'
-                      }`}>
-                        <div className="flex items-center justify-center gap-1.5">
+                    <div key={step.label} className="flex items-center">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                          isDone ? 'bg-[var(--color-success)] text-white shadow-lg' :
+                          isActive ? 'bg-[var(--color-primary)] text-white shadow-lg ring-4 ring-[var(--color-primary)]/10' :
+                          'bg-[var(--color-bg-muted)] text-[var(--color-text-muted)]'
+                        }`}>
                           {isDone ? (
-                            <svg className="w-3.5 h-3.5 text-[var(--color-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                          ) : isActive ? (
-                            <span className="w-3.5 h-3.5 flex items-center justify-center">
-                              <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-[dot-pulse_1.5s_ease-in-out_infinite]" />
-                            </span>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                           ) : (
-                            <span className="w-3.5 h-3.5 flex items-center justify-center">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-text-muted)]/40" />
-                            </span>
+                            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={step.icon} /></svg>
                           )}
-                          <span className="whitespace-nowrap">{label}</span>
                         </div>
+                        <span className={`text-[9px] font-mono uppercase tracking-[0.15em] mt-2 ${
+                          isActive ? 'text-[var(--color-primary)] font-bold' : isDone ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'
+                        }`}>{step.label}</span>
                       </div>
-                      {/* Active indicator bar */}
-                      <div className={`absolute bottom-0 left-2 right-2 h-[2px] rounded-full transition-all duration-500 ${
-                        isActive ? 'bg-[var(--color-accent)]' : isDone ? 'bg-[var(--color-success)]/30' : 'bg-transparent'
-                      }`} />
+                      {i < STEPS.length - 1 && (
+                        <div className={`h-[2px] w-16 mx-2 mb-6 transition-colors duration-500 ${
+                          isDone ? 'bg-gradient-to-r from-[var(--color-success)] to-[var(--color-success)]/30' :
+                          isActive ? 'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-bg-muted)]' :
+                          'bg-[var(--color-bg-muted)]'
+                        }`} />
+                      )}
                     </div>
                   );
                 })}
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="flex-1 overflow-y-auto bg-[var(--color-bg-page)]">
-            <div className="p-6 space-y-5">
-              <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} onLoadDemo={state === 'idle' ? loadDemo : undefined} />
-              {error && <ErrorDisplay message={error} onRetry={reset} />}
-              {result && <ThemeSummary files={result.files} />}
-              {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
+            {/* Main grid: form + preview */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Form side */}
+              <div className="lg:col-span-7 space-y-8">
+                {/* Header */}
+                <header>
+                  <h1 className="font-serif italic text-4xl xl:text-5xl font-light tracking-tight text-[var(--color-text)] mb-3">The Editorial Engine</h1>
+                  <p className="text-[var(--color-text-secondary)] text-base leading-relaxed max-w-lg">
+                    Transform a simple thought into a sophisticated WordPress block theme. No code, just curation.
+                  </p>
+                </header>
+
+                <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} onLoadDemo={state === 'idle' ? loadDemo : undefined} />
+                {error && <ErrorDisplay message={error} onRetry={reset} />}
+              </div>
+
+              {/* Preview side */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="bg-[var(--color-bg-muted)] rounded-2xl overflow-hidden shadow-[var(--shadow-xl)] border border-[var(--color-border)]/10 aspect-[4/5] relative">
+                  {state === 'generating' && !result ? (
+                    <GenerationSkeleton />
+                  ) : result ? (
+                    <PlaygroundPreview themeFiles={result.files} themeSlug={result.themeSlug} />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center space-y-4">
+                      <div className="relative">
+                        <div className="w-20 h-20 bg-[var(--color-primary)]/5 rounded-full blur-2xl absolute -inset-4 animate-[float_4s_ease-in-out_infinite]" />
+                        <svg className="w-16 h-16 text-[var(--color-text-muted)]/20 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={0.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                      </div>
+                      <h3 className="font-serif italic text-xl text-[var(--color-text-secondary)]">The Canvas Awaits</h3>
+                      <p className="text-sm text-[var(--color-text-muted)] max-w-xs">Input your theme directive to witness the real-time synthesis of editorial excellence.</p>
+                    </div>
+                  )}
+                </div>
+
+                {result && <ThemeSummary files={result.files} />}
+                {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
+              </div>
             </div>
+
+            {/* Terminal — full width */}
             <div ref={terminalRef}>
               <GenerationTerminal logs={progress} startedAt={startedAt} />
             </div>
           </div>
-        </div>
-
-        {/* Preview */}
-        <div role="region" aria-label="Theme preview" className="flex-1 min-w-0 bg-[var(--color-bg-page)]">
-          {state === 'generating' && !result ? (
-            <GenerationSkeleton />
-          ) : (
-            <PlaygroundPreview themeFiles={result?.files} themeSlug={result?.themeSlug} />
-          )}
-        </div>
+        </section>
       </div>
 
       {/* Mobile layout */}
@@ -190,15 +220,12 @@ export default function Home() {
   );
 }
 
-function MobileTabBtn({ active, onClick, children, icon, dot }: { active: boolean; onClick: () => void; children: React.ReactNode; icon: string; dot?: boolean }) {
+function MobileTabBtn({ active, onClick, children, dot }: { active: boolean; onClick: () => void; children: React.ReactNode; dot?: boolean }) {
   return (
-    <button onClick={onClick} className={`flex-1 py-3 text-xs font-medium text-center relative transition-all duration-200 ${active ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-muted)]'}`}>
-      <div className="flex flex-col items-center gap-1">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={icon} /></svg>
-        <span>{children}</span>
-      </div>
-      {dot && <span className="absolute top-1.5 right-[30%] w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-[dot-pulse_1.5s_ease-in-out_infinite]" />}
-      {active && <span className="absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-[var(--color-accent)]" />}
+    <button onClick={onClick} className={`flex-1 py-3 text-xs font-mono uppercase tracking-[0.1em] text-center relative transition-all ${active ? 'text-[var(--color-primary-container)] font-semibold' : 'text-[var(--color-text-muted)]'}`}>
+      {children}
+      {dot && <span className="absolute top-2 right-[30%] w-1.5 h-1.5 rounded-full bg-[var(--color-primary-container)] animate-[dot-pulse_1.5s_ease-in-out_infinite]" />}
+      {active && <span className="absolute bottom-0 left-4 right-4 h-[2px] bg-[var(--color-primary-container)]" />}
     </button>
   );
 }
@@ -212,9 +239,8 @@ function KeyboardHint() {
     return () => clearTimeout(timer);
   }, []);
   return (
-    <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] text-white/40">
-      <kbd className="px-1.5 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono text-[9px] text-white/50">{mod}+G</kbd>
-      <span>Generate</span>
+    <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] text-[var(--color-text-muted)]">
+      <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-bg-muted)] border border-[var(--color-border)]/20 font-mono text-[9px]">{mod}+G</kbd>
     </span>
   );
 }

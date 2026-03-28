@@ -10,8 +10,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-sm',
-  secondary: 'bg-white hover:bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] border border-[var(--color-border)] shadow-sm',
+  primary: 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white shadow-sm shadow-[var(--color-primary)]/10',
+  secondary: 'bg-white hover:bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] border border-[var(--color-border)]/20 shadow-sm',
   success: 'bg-[var(--color-success)] hover:brightness-110 text-white shadow-sm',
   ghost: 'bg-transparent hover:bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)]',
   danger: 'bg-[var(--color-error-soft)] hover:bg-[var(--color-error)] text-[var(--color-error)] hover:text-white border border-[var(--color-error)]/10',
@@ -28,7 +28,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center rounded-[var(--radius-lg)] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]/30 focus-visible:ring-offset-1 disabled:opacity-40 disabled:pointer-events-none cursor-pointer active:scale-[0.98] ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-[var(--radius-xl)] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-container)]/30 focus-visible:ring-offset-1 disabled:opacity-40 disabled:pointer-events-none cursor-pointer active:scale-[0.98] ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {loading && <span className="animate-spin w-3.5 h-3.5 border-2 border-current/25 border-t-current rounded-full" />}
