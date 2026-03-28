@@ -80,3 +80,21 @@ theme-slug/
 ```
 
 **Why**: The ZIP must be directly installable via Appearance > Themes > Add New without any post-processing.
+
+## 10. Theme Iteration: Refinement via Previous Context
+
+**Decision**: Allow users to iterate on generated themes by passing the previous theme.json back to the AI with a natural-language refinement instruction.
+
+**Why**: First drafts are rarely final. The creative process is inherently iterative — "make it warmer", "bolder hero", "try serif fonts". Rather than forcing users to start from scratch each time, the refinement flow gives the AI context of what already exists, enabling targeted changes.
+
+**Implementation**: `ThemePrompt` carries optional `refinementPrompt` and `previousThemeJson` fields. When present, the orchestrator uses `buildThemeJsonRefinementPrompt()` instead of the initial generation prompt. The AI is instructed to only change what the user asked for while preserving the rest of the design.
+
+**Trade-off**: Full regeneration still occurs (patterns + templates are rebuilt from the refined theme.json). A more sophisticated approach would detect which layer changed and only regenerate affected files. Documented as a "What I'd Do Next" improvement.
+
+## 11. Design Token Architecture: CSS Custom Properties Throughout
+
+**Decision**: All generated theme content uses WordPress design tokens (`var(--wp--preset--color--primary)`, `var(--wp--preset--font-family--heading)`, etc.) rather than hardcoded values.
+
+**Why**: This is how professional WordPress block themes work. It ensures the Site Editor's Global Styles panel can override any value, and style variations work correctly. It also means a single change in theme.json cascades to every pattern and template — the theme is truly "token-driven."
+
+**Trade-off**: More complex AI prompts. The AI must understand the token naming convention and use it consistently. Mitigated by explicit instructions in every prompt with concrete examples.

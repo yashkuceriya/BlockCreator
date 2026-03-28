@@ -125,15 +125,15 @@ class IntegrationMockProvider implements AIProvider {
     };
   }
 
-  async correctThemeJSON(_errors: string[], _previousOutput: string): Promise<ThemeJSON> {
+  async correctThemeJSON(): Promise<ThemeJSON> {
     return this.generateThemeJSON();
   }
 
-  async correctPatterns(_errors: string[], _previousOutput: string): Promise<{ patterns: Pattern[]; parts: Template[] }> {
+  async correctPatterns(): Promise<{ patterns: Pattern[]; parts: Template[] }> {
     return this.generatePatterns();
   }
 
-  async correctTemplates(_errors: string[], _previousOutput: string): Promise<Template[]> {
+  async correctTemplates(): Promise<Template[]> {
     return this.generateTemplates();
   }
 
@@ -278,7 +278,7 @@ describe('Integration: Full Pipeline', () => {
     expect(files).toContain(`${themeSlug}/patterns/hero.php`);
 
     // Verify NO wp:html anywhere
-    for (const [path, file] of Object.entries(zip.files)) {
+    for (const [, file] of Object.entries(zip.files)) {
       if (!file.dir) {
         const content = await file.async('string');
         expect(content).not.toContain('wp:html');
