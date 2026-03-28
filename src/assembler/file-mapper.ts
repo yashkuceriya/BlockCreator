@@ -1,7 +1,7 @@
 import { ThemeJSON, Template, Pattern, ThemeFiles } from '../types';
 import { generateStyleCSS } from './style-css';
 import { generateFunctionsPHP } from './functions-php';
-import { escapeForComment, escapeForPHPString } from '../lib/sanitize';
+import { escapeForComment, escapeForPHPString, sanitizePatternSlug, sanitizeCategory } from '../lib/sanitize';
 
 export function mapToThemeFiles(
   themeName: string,
@@ -30,7 +30,8 @@ export function mapToThemeFiles(
   }
 
   for (const pattern of patterns) {
-    files.patterns[`${pattern.slug}.php`] = wrapPatternPHP(pattern, themeName);
+    const safeSlug = sanitizePatternSlug(pattern.slug);
+    files.patterns[`${safeSlug}.php`] = wrapPatternPHP(pattern, themeName);
   }
 
   return files;
@@ -40,11 +41,13 @@ function wrapPatternPHP(pattern: Pattern, themeName: string): string {
   const textDomain = themeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const safeTitle = escapeForComment(pattern.title);
   const safeTextDomain = escapeForPHPString(textDomain);
+  const safeSlug = sanitizePatternSlug(pattern.slug);
+  const safeCategories = pattern.categories.map(sanitizeCategory).join(', ');
   return `<?php
 /**
  * Title: ${safeTitle}
- * Slug: ${safeTextDomain}/${pattern.slug}
- * Categories: ${pattern.categories.join(', ')}
+ * Slug: ${safeTextDomain}/${safeSlug}
+ * Categories: ${safeCategories}
  */
 ?>
 ${pattern.content}

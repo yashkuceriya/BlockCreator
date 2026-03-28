@@ -24,6 +24,51 @@ export function escapeForPHPString(text: string): string {
   return text.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+/**
+ * Sanitize a pattern slug from AI output.
+ * Only allows lowercase alphanumeric and hyphens.
+ */
+export function sanitizePatternSlug(slug: string): string {
+  return slug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 100) || 'untitled';
+}
+
+/**
+ * Sanitize a pattern category from AI output.
+ * Only allows lowercase alphanumeric, hyphens, and underscores.
+ */
+export function sanitizeCategory(category: string): string {
+  return category
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 50) || 'featured';
+}
+
+/**
+ * Generate a valid PHP function prefix from a theme name.
+ * PHP identifiers must match [a-zA-Z_][a-zA-Z0-9_]*.
+ * We prepend 'theme_' if the result starts with a digit.
+ */
+export function toPhpFunctionPrefix(themeName: string): string {
+  const base = themeName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+
+  // PHP functions can't start with a digit
+  if (!base || /^[0-9]/.test(base)) {
+    return `theme_${base || 'default'}`;
+  }
+  return base;
+}
+
 export function stripMarkdownCodeFence(text: string): string {
   return text
     .replace(/^```(?:json|html|php|text)?\s*\n?/gm, '')
