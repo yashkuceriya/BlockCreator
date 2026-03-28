@@ -31,7 +31,7 @@ export default function Home() {
   useEffect(() => {
     if (state !== 'complete' || !result) return;
     const showTimer = setTimeout(() => setShowConfetti(true), 50);
-    const hideTimer = setTimeout(() => setShowConfetti(false), 4000);
+    const hideTimer = setTimeout(() => setShowConfetti(false), 3500);
     return () => { clearTimeout(showTimer); clearTimeout(hideTimer); };
   }, [state, result]);
 
