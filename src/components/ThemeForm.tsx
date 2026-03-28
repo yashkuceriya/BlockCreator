@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 interface ThemeFormProps {
   onSubmit: (prompt: ThemePrompt) => void;
   disabled?: boolean;
+  onLoadDemo?: () => void;
 }
 
 const EXAMPLES = [
@@ -18,7 +19,7 @@ const EXAMPLES = [
   { label: 'Non-Profit', desc: 'A compassionate non-profit theme with warm, accessible colors, large imagery of community impact, donation CTA section, volunteer testimonials, and an events/news section.', icon: 'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z' },
 ];
 
-export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function ThemeForm({ onSubmit, disabled }, ref) {
+export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function ThemeForm({ onSubmit, disabled, onLoadDemo }, ref) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [showConstraints, setShowConstraints] = useState(false);
@@ -85,9 +86,27 @@ export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function Th
         </div>
       </div>
 
-      {/* Example prompts */}
+      {/* Demo + Example prompts */}
       {!disabled && descLen === 0 && (
-        <div className="space-y-2 animate-[fadeIn_0.3s_ease-out]">
+        <div className="space-y-3 animate-[fadeIn_0.3s_ease-out]">
+          {/* Demo button */}
+          {onLoadDemo && (
+            <button
+              type="button"
+              onClick={onLoadDemo}
+              className="w-full flex items-center gap-3 px-4 py-3.5 text-left rounded-[var(--radius-xl)] border-2 border-dashed border-[var(--color-accent)]/25 bg-[var(--color-accent-soft)] hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-accent)]/8 transition-all duration-200 group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--color-accent)] to-[#0d4a6e] flex items-center justify-center shrink-0 shadow-sm">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z" /></svg>
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="text-sm font-bold text-[var(--color-accent)]">Try the Demo</span>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Load a pre-built &ldquo;Aurora Studio&rdquo; theme instantly — no API key needed</p>
+              </div>
+              <svg className="w-4 h-4 text-[var(--color-accent)] shrink-0 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+            </button>
+          )}
+
           <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Quick Start</p>
           <div className="grid grid-cols-1 gap-2">
             {EXAMPLES.map((ex) => (

@@ -12,6 +12,7 @@ import { useThemeGeneration } from '../../hooks/useThemeGeneration';
 import { Button } from '../../components/ui/button';
 import { Confetti } from '../../components/Confetti';
 import { GenerationSkeleton } from '../../components/GenerationSkeleton';
+import { DEMO_THEME_FILES, DEMO_THEME_SLUG } from '../../lib/demo-theme';
 
 type MobileTab = 'form' | 'preview' | 'logs';
 
@@ -34,6 +35,21 @@ export default function Home() {
     const hideTimer = setTimeout(() => setShowConfetti(false), 3500);
     return () => { clearTimeout(showTimer); clearTimeout(hideTimer); };
   }, [state, result]);
+
+  const loadDemo = useCallback(async () => {
+    const JSZip = (await import('jszip')).default;
+    const zip = new JSZip();
+    const dir = zip.folder(DEMO_THEME_SLUG)!;
+    dir.file('style.css', DEMO_THEME_FILES['style.css']);
+    dir.file('theme.json', DEMO_THEME_FILES['theme.json']);
+    dir.file('functions.php', DEMO_THEME_FILES['functions.php']);
+    dir.file('readme.txt', DEMO_THEME_FILES['readme.txt']);
+    for (const [name, content] of Object.entries(DEMO_THEME_FILES.templates)) dir.folder('templates')!.file(name, content);
+    for (const [name, content] of Object.entries(DEMO_THEME_FILES.parts)) dir.folder('parts')!.file(name, content);
+    for (const [name, content] of Object.entries(DEMO_THEME_FILES.patterns)) dir.folder('patterns')!.file(name, content);
+    const buf = await zip.generateAsync({ type: 'base64' });
+    loadResult({ files: DEMO_THEME_FILES, zipBase64: buf, themeSlug: DEMO_THEME_SLUG });
+  }, [loadResult]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'g') {
@@ -84,7 +100,7 @@ export default function Home() {
       </div>
 
       {/* Desktop layout */}
-      <div className="hidden lg:flex flex-1 min-h-0 relative">
+      <div id="main-content" className="hidden lg:flex flex-1 min-h-0 relative">
         {/* Sidebar */}
         <Sidebar
           currentResult={result}
@@ -134,7 +150,7 @@ export default function Home() {
 
           <div className="flex-1 overflow-y-auto bg-[var(--color-bg-page)]">
             <div className="p-6 space-y-5">
-              <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} />
+              <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} onLoadDemo={state === 'idle' ? loadDemo : undefined} />
               {error && <ErrorDisplay message={error} onRetry={reset} />}
               {result && <ThemeSummary files={result.files} />}
               {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
@@ -159,7 +175,7 @@ export default function Home() {
       <div className="lg:hidden flex-1 min-h-0 overflow-y-auto p-4 bg-[var(--color-bg-page)]">
         {mobileTab === 'form' && (
           <div className="space-y-4 animate-[fadeIn_0.2s_ease-out]">
-            <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} />
+            <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} onLoadDemo={state === 'idle' ? loadDemo : undefined} />
             {error && <ErrorDisplay message={error} onRetry={reset} />}
             {result && <ThemeSummary files={result.files} />}
             {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
