@@ -10,7 +10,7 @@ interface CardProps {
 
 export function Card({ children, title, description, header, className = '' }: CardProps) {
   return (
-    <div className={`bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] shadow-[var(--shadow-card)] ${className}`}>
+    <div className={`bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-[var(--radius-xl)] shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-md)] transition-shadow duration-300 ${className}`}>
       {(title || description || header) && (
         <div className="px-5 py-3.5 border-b border-[var(--color-border)]">
           {header || (
