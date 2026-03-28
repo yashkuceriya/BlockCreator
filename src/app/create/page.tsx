@@ -204,7 +204,13 @@ function MobileTabBtn({ active, onClick, children, icon, dot }: { active: boolea
 }
 
 function KeyboardHint() {
-  const mod = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent) ? '\u2318' : 'Ctrl';
+  const [mod, setMod] = useState('Ctrl');
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (/Mac|iPhone|iPad/.test(navigator.userAgent)) setMod('\u2318');
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <span className="hidden sm:inline-flex items-center gap-1.5 text-[10px] text-white/40">
       <kbd className="px-1.5 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono text-[9px] text-white/50">{mod}+G</kbd>
