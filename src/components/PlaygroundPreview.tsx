@@ -26,16 +26,11 @@ export function PlaygroundPreview({ themeFiles, themeSlug }: PlaygroundPreviewPr
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar */}
-      <div className="h-11 shrink-0 flex items-center justify-between px-4 border-b border-[var(--color-border)] bg-[var(--color-bg-card)]">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
-            <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 ml-1">
-            <svg className="w-3.5 h-3.5 text-[var(--color-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
-            <span className="text-[11px] text-[var(--color-text-muted)]">
+      <div className="h-10 shrink-0 flex items-center justify-between px-4 border-b border-[var(--color-border)] bg-white">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center h-7 px-3 bg-[var(--color-bg-muted)] rounded-md">
+            <svg className="w-3 h-3 text-[var(--color-text-muted)] mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3" /></svg>
+            <span className="text-[11px] text-[var(--color-text-muted)] truncate max-w-[200px]">
               {hasTheme ? `${themeSlug || 'theme'}.developer.blog` : 'Live Preview'}
             </span>
           </div>

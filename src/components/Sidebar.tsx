@@ -62,10 +62,8 @@ export function Sidebar({ currentResult, onLoadProject, onReset }: SidebarProps)
   };
 
   return (
-    <aside className="w-52 shrink-0 flex flex-col bg-[var(--color-bg-sidebar)] border-r border-[var(--color-border)]">
-      <div className="px-4 py-3.5 border-b border-[var(--color-border)]">
-        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--color-text-muted)]">Workspace</p>
-      </div>
+    <aside className="w-[200px] shrink-0 flex flex-col bg-[var(--color-bg-sidebar)] border-r border-[var(--color-border)]">
+      <div className="h-2" />
 
       <nav className="flex-1 p-2.5 space-y-0.5">
         <NavBtn active={activePanel === 'projects'} onClick={() => togglePanel('projects')} icon={<FolderIcon />} badge={projects.length > 0 ? projects.length : undefined}>
@@ -91,7 +89,7 @@ export function Sidebar({ currentResult, onLoadProject, onReset }: SidebarProps)
         <>
           {/* Backdrop */}
           <div className="fixed inset-0 z-10" onClick={() => setActivePanel(null)} />
-          <div className="absolute left-52 top-[calc(2px+3rem)] bottom-0 w-80 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] shadow-xl z-20 flex flex-col animate-[slideInRight_0.2s_ease-out]">
+          <div className="absolute left-[200px] top-0 bottom-0 w-80 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] shadow-xl z-20 flex flex-col animate-[slideInRight_0.2s_ease-out]">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--color-border)]">
               <span className="text-sm font-bold text-[var(--color-text)]">
                 {activePanel === 'projects' ? 'Projects' : activePanel === 'settings' ? 'Settings' : 'Help'}

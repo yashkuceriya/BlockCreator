@@ -72,14 +72,13 @@ export default function Home() {
   return (
     <div className="h-full overflow-hidden flex flex-col text-[var(--color-text)] bg-[var(--color-bg-page)]">
       <Confetti active={showConfetti} />
-      {/* Header — gradient accent bar + frosted glass */}
-      <div className="h-[2px] shrink-0 bg-gradient-to-r from-[var(--color-accent)] via-[#1a9ed4] to-[var(--color-success)]" />
-      <header role="banner" className="h-12 shrink-0 flex items-center justify-between px-5 bg-[var(--color-bg-card)]/95 backdrop-blur-xl border-b border-[var(--color-border)]">
-        <a href="/landing" className="flex items-center gap-2 group">
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[var(--color-accent)] to-[#0d4a6e] flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" /></svg>
+      {/* Header */}
+      <header role="banner" className="h-12 shrink-0 flex items-center justify-between px-4 bg-white border-b border-[var(--color-border)]">
+        <a href="/landing" className="flex items-center gap-2.5 group">
+          <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)] flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M11.983 1.907a.75.75 0 00-1.292-.657l-8.5 9.5A.75.75 0 002.75 12h6.572l-1.305 6.093a.75.75 0 001.292.657l8.5-9.5A.75.75 0 0017.25 8h-6.572l1.305-6.093z" /></svg>
           </div>
-          <span className="text-sm font-bold text-[var(--color-accent)] group-hover:opacity-80 transition-opacity">The Editorial Engine</span>
+          <span className="text-[13px] font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">The Editorial Engine</span>
         </a>
         <div className="flex items-center gap-3">
           <KeyboardHint />
@@ -109,7 +108,7 @@ export default function Home() {
         />
 
         {/* Form + Terminal */}
-        <div className="w-[420px] shrink-0 flex flex-col border-r border-[var(--color-border)]">
+        <div className="w-[400px] shrink-0 flex flex-col border-r border-[var(--color-border)] bg-white">
           {/* Step progress */}
           {state !== 'idle' && (
             <div className="shrink-0 border-b border-[var(--color-border)] bg-[var(--color-bg-card)] px-1">
