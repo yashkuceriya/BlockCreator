@@ -4,6 +4,8 @@ export interface PlaygroundClient {
   writeFile(path: string, content: string): Promise<void>;
   run(options: { code: string }): Promise<unknown>;
   mkdir(path: string): Promise<void>;
+  /** Navigate the Playground iframe to a URL */
+  goTo?(url: string): Promise<void>;
 }
 
 export async function mountTheme(
@@ -65,29 +67,43 @@ export async function mountTheme(
     await writeFile(`${basePath}/patterns/${name}`, content);
   }
 
-  // Activate theme and set a static front page using the "home" template
+  // Activate theme and set up front page
+  // For block themes, the home.html template is auto-resolved when show_on_front=page
   await client.run({
     code: `<?php
       require_once '/wordpress/wp-load.php';
+
+      // Activate the generated theme
       switch_theme('${safeName}');
 
-      // Create a front page that uses the "home" template
-      $front_page_id = wp_insert_post(array(
+      // Create a static front page
+      $existing = get_page_by_title('Home');
+      $front_page_id = $existing ? $existing->ID : wp_insert_post(array(
         'post_title'   => 'Home',
         'post_status'  => 'publish',
         'post_type'    => 'page',
         'post_content' => '',
-        'page_template' => '',
       ));
 
       if ($front_page_id && !is_wp_error($front_page_id)) {
+        // Set static front page — WordPress will auto-resolve home.html template
         update_option('show_on_front', 'page');
         update_option('page_on_front', $front_page_id);
-        // Set the template to "home" via post meta
-        update_post_meta($front_page_id, '_wp_page_template', 'home');
+
+        // Clear any cached template data
+        wp_cache_flush();
       }
 
-      echo 'Theme activated: ${safeName}';
+      echo 'OK';
     ?>`,
   });
+
+  // Navigate to homepage so the preview shows the generated theme
+  if (client.goTo) {
+    try {
+      await client.goTo('/');
+    } catch {
+      // goTo may not be available in all versions
+    }
+  }
 }
