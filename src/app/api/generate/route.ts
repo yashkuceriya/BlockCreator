@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server';
 import { ThemeOrchestrator } from '../../../ai/orchestrator';
 import { createProvider } from '../../../ai/provider';
+import { ProviderName } from '../../../types';
 import { packageThemeAsBuffer } from '../../../assembler';
 import { sanitizeThemeName } from '../../../lib/sanitize';
-import { validateInput, checkRateLimit } from '../../../lib/guardrails';
+import { validateInput, checkRateLimit, parseClientIp } from '../../../lib/guardrails';
 import { ThemePrompt, GenerationProgress } from '../../../types';
 
 const MAX_DESCRIPTION_LENGTH = 2000;
@@ -23,8 +24,11 @@ function jsonError(message: string, status: number) {
 }
 
 export async function POST(request: NextRequest) {
-  // Rate limiting
-  const clientIp = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'anonymous';
+  // Rate limiting — parse canonical client IP
+  const clientIp = parseClientIp(
+    request.headers.get('x-forwarded-for'),
+    request.headers.get('x-real-ip')
+  );
   const rateCheck = checkRateLimit(clientIp);
   if (!rateCheck.safe) {
     return jsonError(rateCheck.reason!, 429);
@@ -79,7 +83,11 @@ export async function POST(request: NextRequest) {
       };
 
       try {
-        const provider = createProvider();
+        // Use client-selected provider if valid, otherwise auto-select
+        const requestedProvider = typeof body.provider === 'string' && ['auto', 'anthropic', 'openrouter'].includes(body.provider)
+          ? (body.provider as ProviderName)
+          : undefined;
+        const provider = createProvider(requestedProvider);
         const orchestrator = new ThemeOrchestrator(provider, send);
         const theme = await orchestrator.generate(prompt);
 

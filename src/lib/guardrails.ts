@@ -56,18 +56,57 @@ export function validateInput(input: string): GuardrailResult {
 }
 
 /**
- * Simple in-memory rate limiter.
- * In production, use Redis or a proper rate limiting service.
+ * In-memory rate limiter with bounded cardinality.
+ * In production, use Redis or edge KV for distributed limiting.
  */
 const requestLog = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
 const RATE_LIMIT_MAX = 5; // 5 requests per minute
+const MAX_TRACKED_CLIENTS = 10_000; // prevent memory exhaustion
+
+/**
+ * Parse a canonical client IP from request headers.
+ * Takes the first IP from X-Forwarded-For (leftmost = original client),
+ * falls back to X-Real-IP, then to a static key.
+ */
+export function parseClientIp(
+  forwarded: string | null,
+  realIp: string | null
+): string {
+  if (forwarded) {
+    // X-Forwarded-For can be comma-separated: "client, proxy1, proxy2"
+    const first = forwarded.split(',')[0].trim();
+    if (first) return first;
+  }
+  if (realIp) return realIp.trim();
+  return 'anonymous';
+}
 
 export function checkRateLimit(clientId: string): GuardrailResult {
   const now = Date.now();
-  const timestamps = requestLog.get(clientId) || [];
 
-  // Remove expired entries
+  // Periodic cleanup: evict expired entries and cap cardinality
+  if (requestLog.size > MAX_TRACKED_CLIENTS) {
+    for (const [key, timestamps] of requestLog) {
+      const valid = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+      if (valid.length === 0) {
+        requestLog.delete(key);
+      } else {
+        requestLog.set(key, valid);
+      }
+    }
+    // If still over limit after cleanup, evict oldest entries
+    if (requestLog.size > MAX_TRACKED_CLIENTS) {
+      const excess = requestLog.size - MAX_TRACKED_CLIENTS;
+      const keys = requestLog.keys();
+      for (let i = 0; i < excess; i++) {
+        const next = keys.next();
+        if (!next.done) requestLog.delete(next.value);
+      }
+    }
+  }
+
+  const timestamps = requestLog.get(clientId) || [];
   const valid = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
 
   if (valid.length >= RATE_LIMIT_MAX) {
@@ -77,4 +116,9 @@ export function checkRateLimit(clientId: string): GuardrailResult {
   valid.push(now);
   requestLog.set(clientId, valid);
   return { safe: true };
+}
+
+/** Exported for testing */
+export function _resetRateLimitState(): void {
+  requestLog.clear();
 }

@@ -1,4 +1,4 @@
-import { checkPromptInjection, checkContentSafety, validateInput, checkRateLimit } from '../src/lib/guardrails';
+import { checkPromptInjection, checkContentSafety, validateInput, checkRateLimit, parseClientIp } from '../src/lib/guardrails';
 
 describe('Guardrails', () => {
   describe('prompt injection detection', () => {
@@ -62,6 +62,28 @@ describe('Guardrails', () => {
       const id = 'test-flood-' + Date.now();
       for (let i = 0; i < 5; i++) checkRateLimit(id);
       expect(checkRateLimit(id).safe).toBe(false);
+    });
+  });
+
+  describe('parseClientIp', () => {
+    test('extracts first IP from X-Forwarded-For', () => {
+      expect(parseClientIp('1.2.3.4, 5.6.7.8, 9.10.11.12', null)).toBe('1.2.3.4');
+    });
+
+    test('falls back to X-Real-IP', () => {
+      expect(parseClientIp(null, '10.0.0.1')).toBe('10.0.0.1');
+    });
+
+    test('returns anonymous when no headers', () => {
+      expect(parseClientIp(null, null)).toBe('anonymous');
+    });
+
+    test('trims whitespace', () => {
+      expect(parseClientIp('  1.2.3.4  , 5.6.7.8', null)).toBe('1.2.3.4');
+    });
+
+    test('handles single IP in X-Forwarded-For', () => {
+      expect(parseClientIp('192.168.1.1', null)).toBe('192.168.1.1');
     });
   });
 });
