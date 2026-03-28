@@ -113,5 +113,19 @@ export function useThemeGeneration() {
     setStartedAt(null);
   }, []);
 
-  return { state, progress, result, error, startedAt, generate, reset, loadResult };
+  const refine = useCallback(async (refinementPrompt: string) => {
+    if (!result) return;
+    // Parse the previous theme.json from the result
+    const previousThemeJson = result.files['theme.json'];
+    // Create a new prompt with refinement instructions
+    const prompt: ThemePrompt = {
+      name: result.themeSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      description: refinementPrompt,
+      refinementPrompt,
+      previousThemeJson,
+    };
+    await generate(prompt);
+  }, [result, generate]);
+
+  return { state, progress, result, error, startedAt, generate, refine, reset, loadResult };
 }

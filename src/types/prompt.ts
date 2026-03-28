@@ -4,6 +4,10 @@ export interface ThemePrompt {
   colorPreferences?: string;
   typographyPreferences?: string;
   layoutPreferences?: string;
+  /** For iteration: refinement instruction applied to a previously generated theme */
+  refinementPrompt?: string;
+  /** For iteration: the previous theme.json to refine */
+  previousThemeJson?: string;
 }
 
 export interface GenerationProgress {

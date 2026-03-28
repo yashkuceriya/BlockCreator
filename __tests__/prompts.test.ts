@@ -1,5 +1,5 @@
 import { SYSTEM_PROMPT } from '../src/ai/prompts/system';
-import { buildThemeJsonPrompt, buildThemeJsonCorrectionPrompt } from '../src/ai/prompts/theme-json';
+import { buildThemeJsonPrompt, buildThemeJsonCorrectionPrompt, buildThemeJsonRefinementPrompt } from '../src/ai/prompts/theme-json';
 import { buildPatternsPrompt, buildPatternsCorrectionPrompt } from '../src/ai/prompts/patterns';
 import { buildTemplatesPrompt, buildTemplatesCorrectionPrompt } from '../src/ai/prompts/templates';
 import { ThemePrompt, ThemeJSON } from '../src/types';
@@ -56,9 +56,9 @@ describe('Theme JSON Prompt', () => {
 
   test('omits preferences when not provided', () => {
     const prompt = buildThemeJsonPrompt({ name: 'Basic', description: 'Simple theme' });
-    expect(prompt).not.toContain('Color Preferences:');
-    expect(prompt).not.toContain('Typography Preferences:');
-    expect(prompt).not.toContain('Layout Preferences:');
+    expect(prompt).not.toContain('Color Direction:');
+    expect(prompt).not.toContain('Typography Direction:');
+    expect(prompt).not.toContain('Layout Direction:');
   });
 
   test('correction prompt includes errors and previous output', () => {
@@ -74,12 +74,13 @@ describe('Theme JSON Prompt', () => {
 describe('Patterns Prompt', () => {
   test('includes theme.json context', () => {
     const prompt = buildPatternsPrompt(mockPrompt, mockThemeJson);
-    expect(prompt).toContain('"appearanceTools": true');
+    expect(prompt).toContain('primary');
+    expect(prompt).toContain('var(--wp--preset--color--SLUG)');
   });
 
   test('forbids wp:html', () => {
     const prompt = buildPatternsPrompt(mockPrompt, mockThemeJson);
-    expect(prompt).toContain('NEVER wp:html');
+    expect(prompt).toContain('NEVER use wp:html');
   });
 
   test('includes text domain', () => {
@@ -110,5 +111,40 @@ describe('Templates Prompt', () => {
   test('correction prompt includes errors', () => {
     const prompt = buildTemplatesCorrectionPrompt(['Invalid JSON attributes'], '{}');
     expect(prompt).toContain('Invalid JSON attributes');
+  });
+});
+
+describe('Theme Refinement', () => {
+  test('refinement prompt includes previous theme.json', () => {
+    const refinementPrompt: ThemePrompt = {
+      ...mockPrompt,
+      refinementPrompt: 'Make the colors warmer',
+      previousThemeJson: '{"version":2,"settings":{}}',
+    };
+    const prompt = buildThemeJsonRefinementPrompt(refinementPrompt, refinementPrompt.previousThemeJson!);
+    expect(prompt).toContain('Make the colors warmer');
+    expect(prompt).toContain('"version":2');
+    expect(prompt).toContain('Test Theme');
+  });
+
+  test('refinement prompt instructs targeted changes', () => {
+    const prompt = buildThemeJsonRefinementPrompt(
+      { ...mockPrompt, refinementPrompt: 'Use serif fonts' },
+      '{"version":2}'
+    );
+    expect(prompt).toContain('REFINE');
+    expect(prompt).toContain('Use serif fonts');
+    expect(prompt).toContain('Only change what the user asked for');
+  });
+
+  test('ThemePrompt type supports refinement fields', () => {
+    const prompt: ThemePrompt = {
+      name: 'Test',
+      description: 'Test',
+      refinementPrompt: 'Make it darker',
+      previousThemeJson: '{}',
+    };
+    expect(prompt.refinementPrompt).toBe('Make it darker');
+    expect(prompt.previousThemeJson).toBe('{}');
   });
 });

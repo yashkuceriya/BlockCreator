@@ -19,8 +19,14 @@ export class ThemeOrchestrator {
   }
 
   async generate(prompt: ThemePrompt): Promise<GeneratedTheme> {
+    const isRefinement = !!(prompt.refinementPrompt && prompt.previousThemeJson);
+
     // Step 1: Generate theme.json
-    this.emit({ step: 'theme-json', message: 'Generating theme.json design system...', progress: 10 });
+    this.emit({
+      step: 'theme-json',
+      message: isRefinement ? 'Refining theme.json with your changes...' : 'Generating theme.json design system...',
+      progress: 10,
+    });
     const themeJson = await this.generateAndValidateThemeJson(prompt);
     this.emit({ step: 'theme-json', message: 'theme.json validated successfully', progress: 30 });
 

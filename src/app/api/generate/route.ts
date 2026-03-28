@@ -58,12 +58,17 @@ export async function POST(request: NextRequest) {
     return jsonError(guardrailCheck.reason!, 400);
   }
 
+  const refinementPrompt = sanitizeInput(body.refinementPrompt, MAX_DESCRIPTION_LENGTH) || undefined;
+  const previousThemeJson = typeof body.previousThemeJson === 'string' ? body.previousThemeJson.slice(0, 50000) : undefined;
+
   const prompt: ThemePrompt = {
     name,
     description,
     colorPreferences: sanitizeInput(body.colorPreferences, MAX_PREFERENCE_LENGTH) || undefined,
     typographyPreferences: sanitizeInput(body.typographyPreferences, MAX_PREFERENCE_LENGTH) || undefined,
     layoutPreferences: sanitizeInput(body.layoutPreferences, MAX_PREFERENCE_LENGTH) || undefined,
+    refinementPrompt,
+    previousThemeJson,
   };
 
   const encoder = new TextEncoder();

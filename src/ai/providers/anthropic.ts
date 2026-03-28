@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { AIProvider, ThemeJSON, Template, Pattern, ThemePrompt } from '../../types';
 import { SYSTEM_PROMPT } from '../prompts/system';
-import { buildThemeJsonPrompt, buildThemeJsonCorrectionPrompt } from '../prompts/theme-json';
+import { buildThemeJsonPrompt, buildThemeJsonCorrectionPrompt, buildThemeJsonRefinementPrompt } from '../prompts/theme-json';
 import { buildPatternsPrompt, buildPatternsCorrectionPrompt } from '../prompts/patterns';
 import { buildTemplatesPrompt, buildTemplatesCorrectionPrompt } from '../prompts/templates';
 import { stripMarkdownCodeFence } from '../../lib/sanitize';
@@ -31,7 +31,10 @@ export class AnthropicProvider implements AIProvider {
   }
 
   async generateThemeJSON(prompt: ThemePrompt): Promise<ThemeJSON> {
-    const raw = await this.complete(buildThemeJsonPrompt(prompt));
+    const userPrompt = prompt.refinementPrompt && prompt.previousThemeJson
+      ? buildThemeJsonRefinementPrompt(prompt, prompt.previousThemeJson)
+      : buildThemeJsonPrompt(prompt);
+    const raw = await this.complete(userPrompt);
     return JSON.parse(raw) as ThemeJSON;
   }
 
