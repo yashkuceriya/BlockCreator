@@ -1,10 +1,14 @@
-import { ThemePrompt } from '../../types';
+import { ThemePrompt, resolveGenerationOptions } from '../../types';
 
 export function buildThemeJsonPrompt(prompt: ThemePrompt): string {
+  const options = resolveGenerationOptions(prompt.generationOptions);
   let userPrompt = `Design a complete theme.json (version 2) for a WordPress Block Theme.
 
 Theme Name: "${prompt.name}"
-Vision: "${prompt.description}"`;
+Vision: "${prompt.description}"
+Homepage style: "${options.homepageStyle}"
+Section density: "${options.mode}"
+Expected homepage sections: ${options.sections.join(', ')}`;
 
   if (prompt.colorPreferences) {
     userPrompt += `\nColor Direction: ${prompt.colorPreferences}`;
@@ -18,6 +22,16 @@ Vision: "${prompt.description}"`;
 
   userPrompt += `
 
+WORDPRESS-NATIVE DESIGN GUARDRAILS:
+- The result should feel like a polished modern WordPress theme, not an over-designed AI mockup
+- Favor tasteful, believable palettes over extreme novelty unless the brief explicitly asks for something bold
+- Body typography must be highly readable for long-form content; avoid quirky display fonts for body copy
+- Heading and body fonts should feel intentionally paired, not random
+- Keep the design system restrained: one clear brand color, one supporting color, one accent, and calm neutrals
+- Buttons, links, spacing, and typography should feel coherent across blog posts, pages, archives, and homepage sections
+- If the brief is ambiguous, prefer elegant, broadly useful WordPress aesthetics: strong readability, balanced whitespace, subtle contrast, and clear hierarchy
+- Avoid design choices that would feel out of place in a real WordPress site: illegible contrast, too many loud colors, overly tiny body text, or decorative typography everywhere
+
 REQUIRED STRUCTURE — follow this exactly:
 
 1. settings.color.palette — Design a cohesive, intentional palette. Include AT LEAST these 6 colors:
@@ -30,14 +44,17 @@ REQUIRED STRUCTURE — follow this exactly:
    Additional colors encouraged: "surface" for card backgrounds, "highlight" for hover states.
 
    COLOR QUALITY: Colors must feel curated and professional. Study the theme description and choose colors that evoke the right emotion. A photography portfolio might use charcoal + warm white + gold accent. A SaaS product might use deep navy + white + electric blue. A food blog might use cream + terracotta + sage green. Be SPECIFIC and INTENTIONAL.
+   USABILITY: Keep "base" and "contrast" highly readable. "muted" should soften UI chrome without making text muddy. "surface" should work for cards and groups. Do not create palettes where every color competes for attention.
 
 2. settings.typography.fontFamilies — Choose AT LEAST 2 font families:
-   - "heading" — an expressive display font for headings. Match the theme mood.
+   - "heading" — an expressive but practical heading font. Match the theme mood without sacrificing realism.
      For editorial/luxury: use serif like "Playfair Display, Georgia, serif" or "Fraunces, serif"
      For modern/tech: use geometric sans like "Inter, system-ui, sans-serif" or "Space Grotesk, sans-serif"
      For creative/playful: use distinctive fonts like "DM Serif Display, serif" or "Sora, sans-serif"
    - "body" — a highly readable font for body text. Prioritize legibility.
      Good choices: "Inter, system-ui, sans-serif", "Source Sans 3, sans-serif", "Literata, Georgia, serif"
+   - Prefer familiar, dependable web-safe or widely-used stacks that feel plausible in a real WordPress theme
+   - Avoid pairing two highly decorative fonts together
 
    Each font MUST include fontFamily (full stack with fallbacks), slug, and name.
 
@@ -68,10 +85,11 @@ REQUIRED STRUCTURE — follow this exactly:
    - heading: typography.fontFamily "var(--wp--preset--font-family--heading)", color.text "var(--wp--preset--color--contrast)", typography.lineHeight "1.2", typography.fontWeight "700"
    - button: color.background "var(--wp--preset--color--primary)", color.text "var(--wp--preset--color--base)", border.radius "6px", typography.fontWeight "600"
    - caption: color.text "var(--wp--preset--color--muted)", typography.fontSize "var(--wp--preset--font-size--small)"
+   - Keep these styles aligned with typical WordPress expectations: clean buttons, readable links, restrained radii, and sensible content widths
 
 9. templateParts: [{ "name": "header", "area": "header" }, { "name": "footer", "area": "footer" }]
 
-The theme.json must produce a theme that looks PROFESSIONALLY DESIGNED from the moment it's activated. Not default WordPress. Not generic. A theme that makes people say "this was AI generated?"
+The theme.json must produce a theme that looks professionally designed from the moment it's activated. It should feel like a high-quality WordPress theme someone would genuinely use: coherent, readable, stylish, and credible.
 
 Respond with ONLY the theme.json as valid JSON.`;
 

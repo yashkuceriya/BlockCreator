@@ -1,18 +1,67 @@
-import { ThemeJSON, ThemePrompt } from '../../types';
+import {
+  ThemeJSON,
+  ThemePrompt,
+  ThemeSectionOption,
+  resolveGenerationOptions,
+} from '../../types';
+import { toThemeTextDomain } from '../../lib/sanitize';
+
+const SECTION_INSTRUCTIONS: Record<ThemeSectionOption, string> = {
+  hero: `"hero" — The showstopping opening section:
+   - Use wp:cover or a visually rich wp:group with full-width treatment
+   - Include a compelling h1, supporting paragraph, and 1-2 CTA buttons
+   - Make it specific to the theme vision, not generic marketing filler`,
+  features: `"features" — A polished capabilities or highlights grid:
+   - Use wp:columns or a nested wp:group/card layout
+   - Include a section heading, short intro, and 3-4 concrete feature blocks
+   - Feature copy must reflect the theme vision or audience`,
+  about: `"about" — A strong story / introduction section:
+   - Use wp:media-text or an asymmetrical two-column layout
+   - Include a meaningful heading and 2-3 body paragraphs
+   - The tone should explain the brand, publication, or maker behind the site`,
+  gallery: `"gallery" — A visual showcase section:
+   - Use wp:gallery, wp:image, or a media-heavy wp:columns layout
+   - Works especially well for portfolios, magazines, food, travel, and brand sites
+   - Add a short heading/introduction so it feels designed, not dropped in`,
+  team: `"team" — A people / credibility section:
+   - Use wp:columns with repeated card-style groups
+   - Each item should include a heading, short role line, and 1-2 sentences of context
+   - Use for businesses, agencies, or brands that benefit from trust and personality`,
+  pricing: `"pricing" — A conversion-oriented plans section:
+   - Use wp:columns with 2-3 pricing cards built from wp:group, wp:heading, wp:list, wp:buttons
+   - Make one option visually emphasized
+   - Suitable for SaaS, services, memberships, or packaged offers`,
+  testimonials: `"testimonials" — Social proof section:
+   - Use wp:columns with 2-3 testimonial cards
+   - Each card should contain quoted copy plus name/role attribution
+   - Make the voices feel specific to the theme's audience or market`,
+  faq: `"faq" — Objection handling / clarity section:
+   - Use wp:details blocks or grouped Q&A pairs
+   - Provide 3-5 concise, useful questions and answers
+   - This should feel practical, not filler text`,
+  'call-to-action': `"call-to-action" — A distinct conversion section:
+   - Use wp:cover or a standout wp:group with strong color contrast
+   - Include a headline, short persuasive copy, and a prominent button
+   - This section should create a clear next step`,
+};
 
 export function buildPatternsPrompt(
   prompt: ThemePrompt,
   themeJson: ThemeJSON
 ): string {
-  const textDomain = prompt.name.toLowerCase().replace(/\s+/g, '-');
+  const textDomain = toThemeTextDomain(prompt.name);
   const colors = themeJson.settings?.color?.palette?.map(c => c.slug).join(', ') || 'primary, secondary, accent, base, contrast';
   const fonts = themeJson.settings?.typography?.fontFamilies?.map(f => f.slug).join(', ') || 'heading, body';
+  const options = resolveGenerationOptions(prompt.generationOptions);
+  const sectionPlan = options.sections.map((section, index) => `${index + 1}. ${SECTION_INSTRUCTIONS[section]}`).join('\n\n');
 
-  return `You are designing patterns for a VISUALLY STUNNING WordPress block theme. These patterns will be the centerpiece of the homepage — they must look like they came from a premium theme shop, not a template generator.
+  return `You are designing patterns for a high-quality WordPress block theme. These patterns should feel polished, editorial, and WordPress-native — premium, but believable.
 
 Theme: "${prompt.name}"
 Vision: "${prompt.description}"
 Text domain: "${textDomain}"
+Homepage style: "${options.homepageStyle}"
+Section density: "${options.mode}"
 
 Available design tokens:
 - Colors: ${colors} → use as var(--wp--preset--color--SLUG)
@@ -25,73 +74,32 @@ TEMPLATE PARTS (go in /parts/)
 ═══════════════════════════════════════
 
 1. "header" — A premium site header:
-   - Outer wp:group with a background color (use primary, secondary, or contrast — NOT plain white)
+   - Outer wp:group with a background color or subtle surface treatment
    - Inner wp:group with row layout {"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"} and constrained width
    - Left: wp:site-title styled with heading font, appropriate color for the background
    - Right: wp:navigation with 4-5 realistic links relevant to the theme description
    - Horizontal padding: var(--wp--preset--spacing--50), vertical: var(--wp--preset--spacing--40)
-   - The header should have VISUAL PRESENCE — a colored or dark background with light text, or a distinctive border treatment
+   - The header should have visual presence, but still feel like something a real WordPress theme would ship with
    - Apply textColor and backgroundColor attributes using palette slug names
+   - Prefer clean navigation, clear spacing, and subtle brand character over excessive ornament
 
 2. "footer" — A complete, styled footer:
-   - Outer wp:group with a CONTRASTING background (if header is dark, footer should also be dark or use a different dark shade)
+   - Outer wp:group with a contrasting but coherent background
    - Inner content with constrained layout
    - 3-column wp:columns section: Column 1: site info (wp:site-title + wp:paragraph). Column 2: navigation links (wp:heading h4 + wp:navigation or wp:list). Column 3: brief description + social links paragraph
    - Below columns: wp:separator + wp:paragraph with copyright text, smaller font size, muted color
    - Generous padding: spacing--70 top and bottom
-   - The footer should feel substantial and designed — not an afterthought
+   - The footer should feel substantial and designed, but not noisy or overly dense
 
 ═══════════════════════════════════════
 PATTERNS (go in /patterns/)
 ═══════════════════════════════════════
 
-1. "hero" — THE SHOWSTOPPER. This is the first thing anyone sees:
-   - Use wp:cover with overlayColor set to primary or a dramatic color from the palette
-   - The cover should have: {"dimRatio":100,"overlayColor":"primary","minHeight":600,"minHeightUnit":"px","isDark":true}
-   - Inside the cover, center-aligned content:
-     - wp:heading (h1) with xx-large font size — write a COMPELLING, SPECIFIC headline matching the theme description (not "Welcome to Our Website")
-     - wp:paragraph with large font size — a supporting tagline that reinforces the theme's purpose
-     - wp:buttons with 2 buttons: primary CTA (filled, bold) + secondary action (outline style using className "is-style-outline")
-   - Padding: at least var(--wp--preset--spacing--80) top and bottom for an expansive feel
-   - Use textColor attribute to ensure text is readable on the background
-   - This pattern should make someone stop scrolling
+Generate EXACTLY these pattern slugs in this order:
+${options.sections.map((section) => `- "${section}"`).join('\n')}
 
-2. "features" — A polished capabilities/services grid:
-   - Outer wp:group with a DIFFERENT background than the hero (use base or muted for contrast)
-   - Section wp:heading (h2) centered, with a wp:paragraph subtitle below it
-   - wp:columns with 3 wp:column children, each containing:
-     - wp:heading (h3) with the feature title
-     - wp:paragraph with 2-3 sentences of relevant description
-     - Optional: wp:buttons with a "Learn More" text-style link
-   - Each column should have inner padding and optionally a subtle background (surface or base color)
-   - Add gap between columns: {"style":{"spacing":{"blockGap":"var(--wp--preset--spacing--50)"}}}
-   - Write placeholder content that is SPECIFIC to the theme description — if it's a restaurant theme, write about "Seasonal Menu", "Private Events", "Farm to Table"
-
-3. "call-to-action" — A bold conversion section:
-   - Use wp:cover with a DIFFERENT overlayColor than the hero (use accent, secondary, or primary)
-   - Center-aligned content with generous padding (spacing--70+)
-   - wp:heading (h2) with x-large or xx-large font size — compelling, action-oriented copy
-   - wp:paragraph — brief supporting text that creates urgency or value
-   - wp:buttons with a PROMINENT button that stands out against the cover background
-   - This section should feel visually distinct from everything above and below it
-   - Use textColor to ensure readability
-
-4. "about" — A rich about/introduction section:
-   - Use wp:media-text for a two-column layout with visual interest
-   - Media side: wp:image with a placeholder (use {"url":"data:image/svg+xml,...","alt":"About"} or just leave sizeSlug)
-   - Text side: wp:heading (h2) + 2 wp:paragraph blocks with meaningful content about the theme's subject
-   - Section background: subtle color (muted or base)
-   - Add padding around the entire section
-   - The text should tell a STORY relevant to the theme description
-
-5. "testimonials" — Social proof section:
-   - Outer wp:group with background styling
-   - Section wp:heading (h2) centered — "What People Say" or similar
-   - wp:columns with 3 columns, each containing:
-     - wp:group with surface/card background, padding, and border-radius: {"style":{"border":{"radius":"8px"},"spacing":{"padding":{"top":"var(--wp--preset--spacing--50)","right":"var(--wp--preset--spacing--50)","bottom":"var(--wp--preset--spacing--50)","left":"var(--wp--preset--spacing--50)"}}}}
-     - Inside the group: wp:paragraph with italic testimonial text (use {"style":{"typography":{"fontStyle":"italic"}}})
-     - wp:paragraph with the person's name (bold, smaller text)
-   - Write testimonials that feel REAL and relevant to the theme description
+Section briefs:
+${sectionPlan}
 
 ═══════════════════════════════════════
 CRITICAL RULES
@@ -106,6 +114,22 @@ CRITICAL RULES
 - Every pattern must have proper spacing: padding on containers, gap between children
 - Placeholder text must be CONTEXTUALLY RELEVANT to "${prompt.description}" — never "Lorem ipsum"
 - EVERY section should be visually distinct — vary backgrounds, spacing, and layout between patterns
+- Maintain a believable WordPress aesthetic: clean layout rhythm, strong readability, tasteful card treatments, and realistic section transitions
+- Do not overuse dark overlays, loud accents, gradients, or decorative treatments unless the brief clearly calls for them
+- Sections should feel intentionally related to one another, sharing the same design system and not fighting visually
+- Use realistic content lengths and button labels; avoid hypey filler like "Revolutionize your future today"
+- The homepage style should influence the sections:
+  - "landing" = conversion-focused, bold sections, clear CTAs
+  - "editorial" = storytelling, richer copy, reading-oriented rhythm
+  - "portfolio" = visual showcase, case-study feel, image-heavy sections
+  - "business" = trust-building, services clarity, team/proof emphasis
+- The section density should influence how elaborate the patterns are:
+  - "minimal" = fewer nested elements, cleaner composition
+  - "balanced" = premium but disciplined
+  - "rich" = more varied layouts, deeper hierarchy, stronger visual moments
+- Prefer composition quality over complexity. A simple section with good spacing and typography is better than a busy section with weak hierarchy
+- Return one pattern per requested slug only; do not invent extra patterns
+- Use safe slug names exactly as requested
 
 REFERENCE EXAMPLE — a correctly structured hero pattern:
 
@@ -146,7 +170,7 @@ Now generate YOUR unique patterns following this exact syntax format.
 Respond with ONLY this JSON:
 {
   "patterns": [
-    { "slug": "hero", "title": "Hero", "categories": ["featured"], "content": "<!-- wp:... -->" }
+${options.sections.map((section) => `    { "slug": "${section}", "title": "${section === 'call-to-action' ? 'Call to Action' : section.charAt(0).toUpperCase() + section.slice(1)}", "categories": ["featured"], "content": "<!-- wp:... -->" }`).join(',\n')}
   ],
   "parts": [
     { "slug": "header", "content": "<!-- wp:... -->" }

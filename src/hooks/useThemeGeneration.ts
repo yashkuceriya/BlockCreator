@@ -32,7 +32,6 @@ export function useThemeGeneration() {
 
     setState('generating');
     setProgress([]);
-    setResult(null);
     setError(null);
     setStartedAt(Date.now());
 

@@ -16,8 +16,8 @@ class IntegrationMockProvider implements AIProvider {
             { slug: 'primary', color: '#1a365d', name: 'Primary' },
             { slug: 'secondary', color: '#2d3748', name: 'Secondary' },
             { slug: 'accent', color: '#ed8936', name: 'Accent' },
-            { slug: 'background', color: '#ffffff', name: 'Background' },
-            { slug: 'foreground', color: '#1a202c', name: 'Foreground' },
+            { slug: 'base', color: '#ffffff', name: 'Base' },
+            { slug: 'contrast', color: '#1a202c', name: 'Contrast' },
             { slug: 'muted', color: '#edf2f7', name: 'Muted' },
           ],
         },
@@ -39,7 +39,7 @@ class IntegrationMockProvider implements AIProvider {
         useRootPaddingAwareAlignments: true,
       },
       styles: {
-        color: { background: 'var(--wp--preset--color--background)', text: 'var(--wp--preset--color--foreground)' },
+        color: { background: 'var(--wp--preset--color--base)', text: 'var(--wp--preset--color--contrast)' },
         typography: { fontFamily: 'var(--wp--preset--font-family--body)', lineHeight: '1.6' },
         elements: {
           link: { color: { text: 'var(--wp--preset--color--primary)' } },

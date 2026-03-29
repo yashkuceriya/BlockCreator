@@ -1,7 +1,13 @@
 import { ThemeJSON, Template, Pattern, ThemeFiles } from '../types';
 import { generateStyleCSS } from './style-css';
 import { generateFunctionsPHP } from './functions-php';
-import { escapeForComment, escapeForPHPString, sanitizePatternSlug, sanitizeCategory } from '../lib/sanitize';
+import {
+  escapeForComment,
+  escapeForPHPString,
+  sanitizePatternSlug,
+  sanitizeCategory,
+  toThemeTextDomain,
+} from '../lib/sanitize';
 
 export function mapToThemeFiles(
   themeName: string,
@@ -38,7 +44,7 @@ export function mapToThemeFiles(
 }
 
 function wrapPatternPHP(pattern: Pattern, themeName: string): string {
-  const textDomain = themeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const textDomain = toThemeTextDomain(themeName);
   const safeTitle = escapeForComment(pattern.title);
   const safeTextDomain = escapeForPHPString(textDomain);
   const safeSlug = sanitizePatternSlug(pattern.slug);

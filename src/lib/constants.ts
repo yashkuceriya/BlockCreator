@@ -111,7 +111,7 @@ export const HARD_REJECTED_BLOCKS: ReadonlySet<string> = new Set([
   'core/html',
 ]);
 
-export const REQUIRED_TEMPLATES = ['index', 'page', 'single', '404'] as const;
+export const REQUIRED_TEMPLATES = ['index', 'home', 'single', 'page', 'archive', '404'] as const;
 
 export const REQUIRED_PARTS = ['header', 'footer'] as const;
 

@@ -1,4 +1,5 @@
-import { ThemeJSON, ThemePrompt } from '../../types';
+import { ThemeJSON, ThemePrompt, resolveGenerationOptions } from '../../types';
+import { toThemeTextDomain } from '../../lib/sanitize';
 
 export function buildTemplatesPrompt(
   prompt: ThemePrompt,
@@ -6,9 +7,12 @@ export function buildTemplatesPrompt(
   patternSlugs: string[],
   partSlugs: string[]
 ): string {
-  const textDomain = prompt.name.toLowerCase().replace(/\s+/g, '-');
+  const textDomain = toThemeTextDomain(prompt.name);
+  const options = resolveGenerationOptions(prompt.generationOptions);
   return `Generate WordPress block templates for "${prompt.name}" (text domain: "${textDomain}").
 Vision: "${prompt.description}"
+Homepage style: "${options.homepageStyle}"
+Section density: "${options.mode}"
 
 Available template parts: ${partSlugs.map(s => `"${s}"`).join(', ')}
 Available patterns: ${patternSlugs.map(s => `"${textDomain}/${s}"`).join(', ')}
@@ -36,6 +40,13 @@ Generate these 6 templates:
 ${patternSlugs.map(s => `     - <!-- wp:pattern {"slug":"${textDomain}/${s}"} /-->`).join('\n')}
    - <!-- wp:template-part {"slug":"footer","area":"footer"} /-->
    - This is the homepage. Every pattern must be included. The visual flow should feel intentional.
+   - Shape the composition to match the homepage style:
+     - "landing": strong hero momentum, conversion rhythm, clear CTA transitions
+     - "editorial": calmer pacing, storytelling feel, elegant whitespace
+     - "portfolio": immersive showcase, image-led rhythm, premium presentation
+     - "business": trust-building flow with clarity and structure
+   - Use separators, spacing, and section wrappers only when they improve flow; do not add filler blocks
+   - The result should feel like a real WordPress homepage, not a flashy prototype
 
 3. "single" — Single post (optimized for reading):
    - <!-- wp:template-part {"slug":"header","area":"header"} /-->
@@ -98,6 +109,11 @@ CRITICAL RULES:
 - Use theme.json presets for ALL colors and fonts via var(--wp--preset--...)
 - The "home" template MUST include ALL generated patterns — it's the showcase
 - Add proper spacing to all containers
+- Use the homepage style and section density to guide spacing, copy length, and visual rhythm
+- Keep the templates installable and structurally clean; don't invent extra template parts or pattern slugs
+- Prioritize a WordPress-native feel: readable content areas, familiar page structure, and sensible spacing between sections
+- Blog/archive/single templates should feel especially trustworthy and usable, since these are the most obviously "WordPress" views
+- Avoid cramming every template with decorative blocks. Let content templates breathe
 
 REFERENCE — correct template part and pattern reference syntax:
 <!-- wp:template-part {"slug":"header","area":"header"} /-->

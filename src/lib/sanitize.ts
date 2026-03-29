@@ -3,6 +3,8 @@ export function sanitizeThemeName(name: string): string {
     .trim()
     .replace(/[^a-zA-Z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
     .toLowerCase()
     .slice(0, 50);
 }
@@ -37,6 +39,10 @@ export function sanitizePatternSlug(slug: string): string {
     .slice(0, 100) || 'untitled';
 }
 
+export function toThemeTextDomain(themeName: string): string {
+  return sanitizeThemeName(themeName) || 'theme';
+}
+
 /**
  * Sanitize a pattern category from AI output.
  * Only allows lowercase alphanumeric, hyphens, and underscores.
@@ -66,6 +72,7 @@ export function toPhpFunctionPrefix(themeName: string): string {
   if (!base || /^[0-9]/.test(base)) {
     return `theme_${base || 'default'}`;
   }
+
   return base;
 }
 

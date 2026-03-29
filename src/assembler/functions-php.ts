@@ -1,8 +1,8 @@
-import { escapeForComment, escapeForPHPString, toPhpFunctionPrefix } from '../lib/sanitize';
+import { escapeForComment, escapeForPHPString, toPhpFunctionPrefix, toThemeTextDomain } from '../lib/sanitize';
 
 export function generateFunctionsPHP(themeName: string): string {
   const safeName = escapeForComment(themeName);
-  const textDomain = themeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const textDomain = toThemeTextDomain(themeName);
   const funcPrefix = toPhpFunctionPrefix(themeName);
   const safeTextDomain = escapeForPHPString(textDomain);
   return `<?php

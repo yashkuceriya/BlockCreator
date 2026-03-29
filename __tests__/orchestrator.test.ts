@@ -10,8 +10,8 @@ const mockThemeJson: ThemeJSON = {
         { slug: 'primary', color: '#0066cc', name: 'Primary' },
         { slug: 'secondary', color: '#333333', name: 'Secondary' },
         { slug: 'accent', color: '#ff6600', name: 'Accent' },
-        { slug: 'background', color: '#ffffff', name: 'Background' },
-        { slug: 'foreground', color: '#000000', name: 'Foreground' },
+        { slug: 'base', color: '#ffffff', name: 'Base' },
+        { slug: 'contrast', color: '#111827', name: 'Contrast' },
         { slug: 'muted', color: '#f5f5f5', name: 'Muted' },
       ],
     },
@@ -32,7 +32,8 @@ const mockThemeJson: ThemeJSON = {
     useRootPaddingAwareAlignments: true,
   },
   styles: {
-    color: { background: '#ffffff', text: '#000000' },
+    color: { background: '#ffffff', text: '#111827' },
+    typography: { lineHeight: '1.6' },
   },
   templateParts: [
     { name: 'header', title: 'Header', area: 'header' },
@@ -45,7 +46,7 @@ const mockPatterns: Pattern[] = [
     slug: 'hero',
     title: 'Hero',
     categories: ['featured'],
-    content: '<!-- wp:group --><div class="wp-block-group"><!-- wp:heading --><h2>Hero</h2><!-- /wp:heading --></div><!-- /wp:group -->',
+    content: '<!-- wp:group --><div class="wp-block-group"><!-- wp:heading --><h2>Hero</h2><!-- /wp:heading --><!-- wp:buttons --><div class="wp-block-buttons"><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button">Explore</a></div><!-- /wp:button --></div><!-- /wp:buttons --></div><!-- /wp:group -->',
   },
 ];
 
@@ -66,12 +67,20 @@ const mockTemplates: Template[] = [
     content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:group --><div class="wp-block-group"><!-- wp:query --><div class="wp-block-query"><!-- wp:post-template --><!-- wp:post-title /--><!-- /wp:post-template --></div><!-- /wp:query --></div><!-- /wp:group --><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
   },
   {
+    slug: 'home',
+    content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:pattern {"slug":"test-theme/hero"} /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+  },
+  {
     slug: 'page',
     content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:group --><div class="wp-block-group"><!-- wp:post-title /--><!-- wp:post-content /--></div><!-- /wp:group --><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
   },
   {
     slug: 'single',
     content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:group --><div class="wp-block-group"><!-- wp:post-title /--><!-- wp:post-content /--></div><!-- /wp:group --><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+  },
+  {
+    slug: 'archive',
+    content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:group --><div class="wp-block-group"><!-- wp:query-title {"type":"archive"} /--></div><!-- /wp:group --><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
   },
   {
     slug: '404',
@@ -115,7 +124,7 @@ describe('ThemeOrchestrator', () => {
 
     expect(result.name).toBe('Test Theme');
     expect(result.themeJson.version).toBe(2);
-    expect(result.templates).toHaveLength(4);
+    expect(result.templates).toHaveLength(6);
     expect(result.patterns).toHaveLength(1);
     expect(result.parts).toHaveLength(2);
 

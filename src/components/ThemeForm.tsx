@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, FormEvent, forwardRef } from 'react';
-import { ThemePrompt } from '../types';
+import {
+  ThemePrompt,
+  ThemeGenerationMode,
+  HomepageStyle,
+  ThemeSectionOption,
+  THEME_SECTION_OPTIONS,
+} from '../types';
 import { Button } from './ui/button';
 
 interface ThemeFormProps {
@@ -45,6 +51,31 @@ const LAYOUT_OPTIONS = [
   { label: 'Portfolio Grid', value: 'Full-width hero, masonry-style grid, project showcase layout' },
 ];
 
+const HOMEPAGE_STYLE_OPTIONS: Array<{ label: string; value: HomepageStyle }> = [
+  { label: 'Landing', value: 'landing' },
+  { label: 'Editorial', value: 'editorial' },
+  { label: 'Portfolio', value: 'portfolio' },
+  { label: 'Business', value: 'business' },
+];
+
+const GENERATION_MODE_OPTIONS: Array<{ label: string; value: ThemeGenerationMode }> = [
+  { label: 'Minimal', value: 'minimal' },
+  { label: 'Balanced', value: 'balanced' },
+  { label: 'Rich', value: 'rich' },
+];
+
+const SECTION_LABELS: Record<ThemeSectionOption, string> = {
+  hero: 'Hero',
+  features: 'Features',
+  about: 'About',
+  gallery: 'Gallery',
+  team: 'Team',
+  pricing: 'Pricing',
+  testimonials: 'Testimonials',
+  faq: 'FAQ',
+  'call-to-action': 'CTA',
+};
+
 export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function ThemeForm({ onSubmit, disabled, onLoadDemo }, ref) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -53,6 +84,17 @@ export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function Th
   const [typographyPreferences, setTypographyPreferences] = useState('');
   const [layoutPreferences, setLayoutPreferences] = useState('');
   const [selectedColorPreset, setSelectedColorPreset] = useState<number | null>(null);
+  const [generationMode, setGenerationMode] = useState<ThemeGenerationMode>('balanced');
+  const [homepageStyle, setHomepageStyle] = useState<HomepageStyle>('landing');
+  const [sections, setSections] = useState<ThemeSectionOption[]>([]);
+
+  const toggleSection = (section: ThemeSectionOption) => {
+    setSections((current) =>
+      current.includes(section)
+        ? current.filter((item) => item !== section)
+        : [...current, section]
+    );
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -63,6 +105,11 @@ export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function Th
       colorPreferences: colorPreferences.trim() || undefined,
       typographyPreferences: typographyPreferences.trim() || undefined,
       layoutPreferences: layoutPreferences.trim() || undefined,
+      generationOptions: {
+        mode: generationMode,
+        homepageStyle,
+        sections: sections.length > 0 ? sections : undefined,
+      },
     });
   };
 
@@ -254,6 +301,70 @@ export const ThemeForm = forwardRef<HTMLFormElement, ThemeFormProps>(function Th
                   ))}
                 </select>
                 <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="homepage-style" className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5">Homepage Type</label>
+                <div className="relative">
+                  <select
+                    id="homepage-style"
+                    value={homepageStyle}
+                    onChange={(e) => setHomepageStyle(e.target.value as HomepageStyle)}
+                    disabled={disabled}
+                    className={selectInput}
+                  >
+                    {HOMEPAGE_STYLE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+              </div>
+              <div>
+                <label htmlFor="generation-mode" className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5">Section Density</label>
+                <div className="relative">
+                  <select
+                    id="generation-mode"
+                    value={generationMode}
+                    onChange={(e) => setGenerationMode(e.target.value as ThemeGenerationMode)}
+                    disabled={disabled}
+                    className={selectInput}
+                  >
+                    {GENERATION_MODE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-medium text-[var(--color-text-secondary)]">Section Mix</label>
+                <span className="text-[10px] text-[var(--color-text-muted)]">Optional override</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {THEME_SECTION_OPTIONS.map((section) => {
+                  const active = sections.includes(section);
+                  return (
+                    <button
+                      key={section}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => toggleSection(section)}
+                      className={`px-2.5 py-1.5 rounded-full border text-[10px] font-medium transition-all ${
+                        active
+                          ? 'border-[var(--color-accent)]/30 bg-[var(--color-accent-soft)] text-[var(--color-accent)]'
+                          : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-secondary)]'
+                      }`}
+                    >
+                      {SECTION_LABELS[section]}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -7,9 +7,10 @@ import { ThemeFiles } from '../types';
 interface PlaygroundPreviewProps {
   themeFiles?: ThemeFiles;
   themeSlug?: string;
+  isRefreshing?: boolean;
 }
 
-export function PlaygroundPreview({ themeFiles, themeSlug }: PlaygroundPreviewProps) {
+export function PlaygroundPreview({ themeFiles, themeSlug, isRefreshing = false }: PlaygroundPreviewProps) {
   const { ready, loading, error, iframeRef, boot, loadTheme } = usePlayground();
   const [view, setView] = useState<'preview' | 'files'>('preview');
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -56,6 +57,12 @@ export function PlaygroundPreview({ themeFiles, themeSlug }: PlaygroundPreviewPr
             </div>
             <p className="text-[var(--color-text-muted)] text-sm mt-4">Loading WordPress Playground...</p>
           </Overlay>
+        )}
+
+        {isRefreshing && hasTheme && !loading && !error && (
+          <div className="absolute top-3 right-3 z-10 rounded-full border border-[var(--color-border)] bg-white/95 px-3 py-1.5 text-[10px] font-medium text-[var(--color-text-secondary)] shadow-sm backdrop-blur">
+            Updating preview...
+          </div>
         )}
 
         {error && !loading && (

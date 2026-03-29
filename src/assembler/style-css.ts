@@ -1,4 +1,4 @@
-import { escapeForComment } from '../lib/sanitize';
+import { escapeForComment, toThemeTextDomain } from '../lib/sanitize';
 
 export function generateStyleCSS(
   themeName: string,
@@ -6,7 +6,7 @@ export function generateStyleCSS(
 ): string {
   const safeName = escapeForComment(themeName);
   const safeDesc = escapeForComment(description);
-  const textDomain = themeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const textDomain = toThemeTextDomain(themeName);
   return `/*
 Theme Name: ${safeName}
 Theme URI:

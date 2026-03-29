@@ -6,7 +6,32 @@ jest.mock('../src/ai/provider', () => ({
   createProvider: () => ({
     generateThemeJSON: jest.fn().mockResolvedValue({
       version: 2,
-      settings: { appearanceTools: true },
+      settings: {
+        appearanceTools: true,
+        color: {
+          palette: [
+            { slug: 'primary', color: '#1d4ed8', name: 'Primary' },
+            { slug: 'accent', color: '#f59e0b', name: 'Accent' },
+            { slug: 'base', color: '#ffffff', name: 'Base' },
+            { slug: 'contrast', color: '#111827', name: 'Contrast' },
+            { slug: 'muted', color: '#6b7280', name: 'Muted' },
+          ],
+        },
+        typography: {
+          fontFamilies: [
+            { slug: 'heading', name: 'Heading', fontFamily: 'Playfair Display, Georgia, serif' },
+            { slug: 'body', name: 'Body', fontFamily: 'Inter, system-ui, sans-serif' },
+          ],
+        },
+        layout: { contentSize: '760px', wideSize: '1200px' },
+      },
+      styles: {
+        typography: { lineHeight: '1.7' },
+      },
+      templateParts: [
+        { name: 'header', title: 'Header', area: 'header' },
+        { name: 'footer', title: 'Footer', area: 'footer' },
+      ],
     }),
     generatePatterns: jest.fn().mockResolvedValue({
       patterns: [
@@ -14,7 +39,7 @@ jest.mock('../src/ai/provider', () => ({
           slug: 'hero',
           title: 'Hero',
           categories: ['featured'],
-          content: '<!-- wp:heading --><h2>Hero</h2><!-- /wp:heading -->',
+          content: '<!-- wp:group --><div class="wp-block-group"><!-- wp:heading --><h2>Hero</h2><!-- /wp:heading --><!-- wp:buttons --><div class="wp-block-buttons"><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button">Start</a></div><!-- /wp:button --></div><!-- /wp:buttons --></div><!-- /wp:group -->',
         },
       ],
       parts: [
@@ -22,12 +47,35 @@ jest.mock('../src/ai/provider', () => ({
         { slug: 'footer', content: '<!-- wp:paragraph --><p>Footer</p><!-- /wp:paragraph -->' },
       ],
     }),
-    generateTemplates: jest.fn().mockResolvedValue([
-      {
-        slug: 'index',
-        content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:post-content /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
-      },
-    ]),
+    generateTemplates: jest.fn().mockImplementation((prompt: { name: string }) => {
+      const textDomain = prompt.name.toLowerCase().replace(/\s+/g, '-');
+      return [
+        {
+          slug: 'index',
+          content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:post-content /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+        },
+        {
+          slug: 'home',
+          content: `<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:pattern {"slug":"${textDomain}/hero"} /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->`,
+        },
+        {
+          slug: 'single',
+          content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:post-content /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+        },
+        {
+          slug: 'page',
+          content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:post-content /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+        },
+        {
+          slug: 'archive',
+          content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:query-title {"type":"archive"} /--><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+        },
+        {
+          slug: '404',
+          content: '<!-- wp:template-part {"slug":"header","area":"header"} /--><!-- wp:heading --><h2>Not found</h2><!-- /wp:heading --><!-- wp:template-part {"slug":"footer","area":"footer"} /-->',
+        },
+      ];
+    }),
     correctThemeJSON: jest.fn(),
     correctPatterns: jest.fn(),
     correctTemplates: jest.fn(),

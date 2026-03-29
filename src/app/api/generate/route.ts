@@ -5,7 +5,13 @@ import { ProviderName } from '../../../types';
 import { packageThemeAsBuffer } from '../../../assembler';
 import { sanitizeThemeName } from '../../../lib/sanitize';
 import { validateInput, checkRateLimit, parseClientIp } from '../../../lib/guardrails';
-import { ThemePrompt, GenerationProgress } from '../../../types';
+import {
+  ThemePrompt,
+  GenerationProgress,
+  THEME_GENERATION_MODES,
+  HOMEPAGE_STYLES,
+  THEME_SECTION_OPTIONS,
+} from '../../../types';
 
 const MAX_DESCRIPTION_LENGTH = 2000;
 const MAX_NAME_LENGTH = 100;
@@ -21,6 +27,33 @@ function jsonError(message: string, status: number) {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function sanitizeGenerationOptions(input: unknown): ThemePrompt['generationOptions'] | undefined {
+  if (!input || typeof input !== 'object') return undefined;
+
+  const raw = input as Record<string, unknown>;
+  const mode = typeof raw.mode === 'string' && THEME_GENERATION_MODES.includes(raw.mode as typeof THEME_GENERATION_MODES[number])
+    ? raw.mode
+    : undefined;
+  const homepageStyle = typeof raw.homepageStyle === 'string' && HOMEPAGE_STYLES.includes(raw.homepageStyle as typeof HOMEPAGE_STYLES[number])
+    ? raw.homepageStyle
+    : undefined;
+  const sections = Array.isArray(raw.sections)
+    ? raw.sections
+      .filter((section): section is string => typeof section === 'string')
+      .filter((section) => THEME_SECTION_OPTIONS.includes(section as typeof THEME_SECTION_OPTIONS[number]))
+      .filter((section, index, all) => all.indexOf(section) === index)
+      .slice(0, 8)
+    : undefined;
+
+  if (!mode && !homepageStyle && (!sections || sections.length === 0)) return undefined;
+
+  return {
+    mode,
+    homepageStyle,
+    sections: sections && sections.length > 0 ? sections : undefined,
+  };
 }
 
 export async function POST(request: NextRequest) {
@@ -71,6 +104,7 @@ export async function POST(request: NextRequest) {
     colorPreferences: sanitizeInput(body.colorPreferences, MAX_PREFERENCE_LENGTH) || undefined,
     typographyPreferences: sanitizeInput(body.typographyPreferences, MAX_PREFERENCE_LENGTH) || undefined,
     layoutPreferences: sanitizeInput(body.layoutPreferences, MAX_PREFERENCE_LENGTH) || undefined,
+    generationOptions: sanitizeGenerationOptions(body.generationOptions),
     refinementPrompt,
     previousThemeJson,
   };

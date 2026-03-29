@@ -173,7 +173,11 @@ export default function Home() {
                   {state === 'generating' && !result ? (
                     <GenerationSkeleton />
                   ) : result ? (
-                    <PlaygroundPreview themeFiles={result.files} themeSlug={result.themeSlug} />
+                    <PlaygroundPreview
+                      themeFiles={result.files}
+                      themeSlug={result.themeSlug}
+                      isRefreshing={state === 'generating'}
+                    />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center space-y-4">
                       <div className="relative">
@@ -187,7 +191,7 @@ export default function Home() {
                 </div>
 
                 {result && <ThemeSummary files={result.files} />}
-                {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
+                {result && state !== 'generating' && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
               </div>
             </div>
 
@@ -206,11 +210,11 @@ export default function Home() {
             <ThemeForm ref={formRef} onSubmit={generate} disabled={state === 'generating'} onLoadDemo={state === 'idle' ? loadDemo : undefined} />
             {error && <ErrorDisplay message={error} onRetry={reset} />}
             {result && <ThemeSummary files={result.files} />}
-            {result && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
+            {result && state !== 'generating' && <SuccessCard themeSlug={result.themeSlug} zipBase64={result.zipBase64} files={result.files} onRefine={(instruction) => refine(instruction)} />}
           </div>
         )}
         {mobileTab === 'preview' && (
-          <div className="h-[calc(100vh-120px)] animate-[fadeIn_0.2s_ease-out]"><PlaygroundPreview themeFiles={result?.files} themeSlug={result?.themeSlug} /></div>
+          <div className="h-[calc(100vh-120px)] animate-[fadeIn_0.2s_ease-out]"><PlaygroundPreview themeFiles={result?.files} themeSlug={result?.themeSlug} isRefreshing={state === 'generating'} /></div>
         )}
         {mobileTab === 'logs' && (
           <div className="animate-[fadeIn_0.2s_ease-out]"><GenerationTerminal logs={progress} startedAt={startedAt} /></div>
