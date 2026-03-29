@@ -99,6 +99,25 @@ CRITICAL RULES:
 - The "home" template MUST include ALL generated patterns — it's the showcase
 - Add proper spacing to all containers
 
+REFERENCE — correct template part and pattern reference syntax:
+<!-- wp:template-part {"slug":"header","area":"header"} /-->
+<!-- wp:pattern {"slug":"${textDomain}/hero"} /-->
+<!-- wp:template-part {"slug":"footer","area":"footer"} /-->
+
+REFERENCE — correct query loop structure:
+<!-- wp:query {"queryId":1,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date"}} -->
+<!-- wp:post-template -->
+<!-- wp:post-featured-image {"isLink":true,"style":{"border":{"radius":"8px"}}} /-->
+<!-- wp:post-title {"isLink":true,"fontSize":"large","style":{"typography":{"fontFamily":"var(--wp--preset--font-family--heading)"}}} /-->
+<!-- wp:post-excerpt {"fontSize":"medium"} /-->
+<!-- /wp:post-template -->
+<!-- wp:query-pagination -->
+<!-- wp:query-pagination-previous /-->
+<!-- wp:query-pagination-numbers /-->
+<!-- wp:query-pagination-next /-->
+<!-- /wp:query-pagination -->
+<!-- /wp:query -->
+
 Respond with ONLY this JSON:
 {
   "templates": [

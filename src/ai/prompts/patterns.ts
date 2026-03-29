@@ -107,6 +107,42 @@ CRITICAL RULES
 - Placeholder text must be CONTEXTUALLY RELEVANT to "${prompt.description}" — never "Lorem ipsum"
 - EVERY section should be visually distinct — vary backgrounds, spacing, and layout between patterns
 
+REFERENCE EXAMPLE — a correctly structured hero pattern:
+
+<!-- wp:cover {"overlayColor":"primary","minHeight":600,"minHeightUnit":"px","isDark":true,"align":"full","style":{"spacing":{"padding":{"top":"var(--wp--preset--spacing--80)","bottom":"var(--wp--preset--spacing--80)","left":"var(--wp--preset--spacing--50)","right":"var(--wp--preset--spacing--50)"}}}} -->
+<div class="wp-block-cover alignfull is-dark" style="min-height:600px;padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--50)"><span aria-hidden="true" class="wp-block-cover__background has-primary-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+<!-- wp:group {"layout":{"type":"constrained","contentSize":"680px"}} -->
+<div class="wp-block-group" style="text-align:center">
+<!-- wp:heading {"level":1,"textColor":"base","fontSize":"xx-large","style":{"typography":{"fontFamily":"var(--wp--preset--font-family--heading)","lineHeight":"1.1"}}} -->
+<h1 class="wp-block-heading has-base-color has-text-color has-xx-large-font-size">Your Compelling Headline Here</h1>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"textColor":"muted","fontSize":"large"} -->
+<p class="has-muted-color has-text-color has-large-font-size">A supporting tagline that reinforces the theme purpose.</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var(--wp--preset--spacing--50)"}}}} -->
+<div class="wp-block-buttons">
+<!-- wp:button {"backgroundColor":"accent","textColor":"primary"} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-primary-color has-accent-background-color has-text-color has-background wp-element-button">Primary Action</a></div>
+<!-- /wp:button -->
+<!-- wp:button {"className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button">Secondary Action</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div></div>
+<!-- /wp:cover -->
+
+Study this example carefully. Note:
+- Block comments use <!-- wp:name {JSON} --> format
+- HTML markup between open/close matches WordPress output
+- backgroundColor/textColor use slug names (not CSS vars)
+- style attribute uses CSS var() for spacing
+- Proper class names (has-*-background-color, has-*-color, etc.)
+
+Now generate YOUR unique patterns following this exact syntax format.
+
 Respond with ONLY this JSON:
 {
   "patterns": [
