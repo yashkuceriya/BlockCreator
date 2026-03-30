@@ -34,17 +34,17 @@ function sanitizeGenerationOptions(input: unknown): ThemePrompt['generationOptio
 
   const raw = input as Record<string, unknown>;
   const mode = typeof raw.mode === 'string' && THEME_GENERATION_MODES.includes(raw.mode as typeof THEME_GENERATION_MODES[number])
-    ? raw.mode
+    ? (raw.mode as typeof THEME_GENERATION_MODES[number])
     : undefined;
   const homepageStyle = typeof raw.homepageStyle === 'string' && HOMEPAGE_STYLES.includes(raw.homepageStyle as typeof HOMEPAGE_STYLES[number])
-    ? raw.homepageStyle
+    ? (raw.homepageStyle as typeof HOMEPAGE_STYLES[number])
     : undefined;
   const sections = Array.isArray(raw.sections)
-    ? raw.sections
+    ? (raw.sections
       .filter((section): section is string => typeof section === 'string')
       .filter((section) => THEME_SECTION_OPTIONS.includes(section as typeof THEME_SECTION_OPTIONS[number]))
       .filter((section, index, all) => all.indexOf(section) === index)
-      .slice(0, 8)
+      .slice(0, 8) as typeof THEME_SECTION_OPTIONS[number][])
     : undefined;
 
   if (!mode && !homepageStyle && (!sections || sections.length === 0)) return undefined;
