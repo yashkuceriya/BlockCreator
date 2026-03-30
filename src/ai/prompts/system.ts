@@ -49,6 +49,14 @@ Color Application:
 - Buttons should be bold and visible: filled with primary or accent color
 - Links should be clearly styled: use primary or accent color
 
+TEXT READABILITY (CRITICAL — violations make themes unusable):
+- ALWAYS set explicit textColor when setting backgroundColor on any block
+- Dark backgrounds MUST use white or very light text (e.g., "base" or lightest palette color)
+- Light backgrounds MUST use dark text (e.g., "contrast" or darkest palette color)
+- NEVER use mid-tone gray text on dark backgrounds — it is unreadable
+- Cards, columns, and groups with colored backgrounds MUST have {"textColor":"base"} or {"textColor":"contrast"} set
+- Test mentally: if the background is dark, the text MUST be white/near-white. No exceptions.
+
 Block Patterns Must Be:
 - Rich and layered — nested groups, columns within covers, buttons within groups
 - Contextually relevant — placeholder text should match the theme's described purpose

@@ -108,7 +108,8 @@ CRITICAL RULES
 - NEVER use wp:html — this causes immediate rejection
 - ALL blocks must be standard WordPress core blocks
 - Use design tokens (var(--wp--preset--...)) for ALL colors, fonts, and sizes — never hardcoded values
-- Set backgroundColor and textColor attributes on wp:group and wp:cover blocks using palette SLUG NAMES (not CSS variables) for proper WordPress color resolution
+- Set backgroundColor AND textColor attributes on wp:group and wp:cover blocks using palette SLUG NAMES (not CSS variables) for proper WordPress color resolution
+- TEXT READABILITY IS MANDATORY: dark backgrounds → use "base" (white/light) textColor. Light backgrounds → use "contrast" (dark) textColor. NEVER leave textColor unset when backgroundColor is set — this creates unreadable text
 - For inline styles, use the style attribute with CSS variables: {"style":{"color":{"text":"var(--wp--preset--color--base)"}}}
 - Create RICH, NESTED block structures — not flat, shallow patterns
 - Every pattern must have proper spacing: padding on containers, gap between children
